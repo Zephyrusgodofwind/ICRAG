@@ -11,10 +11,11 @@ data/processed/*
 !data/processed/.gitkeep
 data/chunks/*
 !data/chunks/.gitkeep
+data/index/*
+!data/index/.gitkeep
 data/manifests/*.jsonl
 !data/manifests/.gitkeep
 artifacts/
 dist/
 build/
 *.egg-info/
-

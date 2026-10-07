@@ -1,9 +1,13 @@
 from datetime import UTC, datetime
 
+import pytest
+
 from irishclinicalrag.models import EvidenceChunk
+from irishclinicalrag.pipeline import retrieve
 from irishclinicalrag.retrieval.bm25 import BM25Retriever
 from irishclinicalrag.retrieval.dense import HashingDenseRetriever
 from irishclinicalrag.retrieval.hybrid import HybridRetriever
+from irishclinicalrag.settings import Settings
 
 
 def _chunk(identifier: str, content: str) -> EvidenceChunk:
@@ -43,3 +47,28 @@ def test_empty_retrieval_returns_no_evidence() -> None:
 
     assert hybrid.search("zzzxxyy unmatched", top_k=5) == []
 
+
+@pytest.mark.parametrize(
+    ("method", "expected"),
+    [("bm25", "bm25"), ("dense", "dense-hashing"), ("hybrid", "hybrid-rrf")],
+)
+def test_pipeline_keeps_retrieval_paths_independently_selectable(
+    tmp_path, method: str, expected: str
+) -> None:
+    response = retrieve(
+        "antibiotic prescription review",
+        [_chunk("c1", "Review each antibiotic prescription.")],
+        Settings(),
+        data_dir=tmp_path,
+        method=method,
+    )
+
+    assert response.retrieval_metadata.method == expected
+    assert response.evidence[0].chunk.chunk_id == "c1"
+    if method == "bm25":
+        assert response.retrieval_metadata.parameters["dense_backend"] is None
+
+
+def test_pipeline_rejects_unknown_retrieval_method(tmp_path) -> None:
+    with pytest.raises(ValueError, match="unknown retrieval method"):
+        retrieve("question", [_chunk("c1", "evidence")], Settings(), tmp_path, "unknown")

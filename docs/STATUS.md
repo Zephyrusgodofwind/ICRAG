@@ -6,10 +6,10 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 
 ## Non-negotiable release scope
 
-- [~] Authoritative Irish medical corpus
+- [x] Authoritative Irish medical corpus (current scoped snapshot: 8 HSE/NCEC documents)
 - [x] Repeatable ingestion with immutable raw storage and manifest
 - [x] Metadata-aware section chunking
-- [~] Dense retrieval
+- [x] Dense retrieval using a persistent BGE-small index
 - [x] BM25 retrieval
 - [x] Hybrid retrieval using reciprocal-rank fusion
 - [ ] Cross-encoder reranking
@@ -23,7 +23,7 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [~] Docker Compose configuration implemented; runtime verification pending (Docker unavailable)
 - [x] README skeleton and architecture diagram
 - [ ] Demo screenshots/video
-- [~] Critical component tests (11 passing after the UI revision; 76.09% coverage)
+- [x] Critical component tests (20 passing; 73.82% statement coverage)
 
 ## Day 1 milestone
 
@@ -31,8 +31,24 @@ Complete: one authoritative HSE document travels through immutable download, par
 metadata-aware chunking, indexing, BM25 and dense-baseline retrieval, reciprocal-rank
 fusion, API delivery, safety handling, citations, and a usable evidence interface.
 
-Day 1 closeout is blocked only on the user-created GitHub repository URL. The verified
-local commits will be pushed as soon as that remote exists.
+Day 1 was committed and pushed to `Zephyrusgodofwind/ICRAG`.
+
+## Day 2 milestone
+
+Implemented and locally verified:
+
+- Expanded the public corpus to six HSE documents and two NCEC guideline volumes.
+- Ingested 692 metadata-preserving passages from 21,432,482 bytes of source files.
+- Passed the corpus integrity gate with zero errors; six repeated passages were reviewed
+  and confirmed as shared NCEC Volume 1/Volume 2 front matter.
+- Recorded corpus fingerprint
+  `aabbbb57ab1284a786020a9aaae8929f90a9205b7332d5571f9482458185e213`.
+- Built a persistent 692 × 384 `BAAI/bge-small-en-v1.5` semantic index.
+- Exposed independently selectable BM25, dense, and hybrid retrieval with score/rank
+  debugging and provenance.
+- Smoke-checked synthetic COPD, UTI, penicillin-allergy, and infection-control questions;
+  the expected authoritative document ranked first in the recorded checks. This is a
+  functional smoke check, not a formal quality metric or evaluation claim.
 
 ## Research questions
 

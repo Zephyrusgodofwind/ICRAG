@@ -13,28 +13,36 @@ date, URL, retrieved passage, score, and evidence-sufficiency information.
 
 ## Current milestone
 
-Day 1 establishes a complete local evidence path:
+Day 2 establishes a validated, multi-topic Irish evidence path:
 
 ```text
 official Irish source -> immutable download -> parse -> section-aware chunk
--> metadata validation -> BM25 + dense vectors -> RRF hybrid retrieval
+-> corpus integrity gate -> BM25 + BGE semantic vectors -> RRF hybrid retrieval
 ```
 
-The baseline dense retriever uses deterministic hashed vectors so the pipeline is
-fully reproducible without model downloads. A SentenceTransformer backend is a
-planned drop-in experiment, not a hidden prerequisite.
+The current catalog contains eight public HSE/NCEC documents and produces 692
+checksum-verified passages. A persistent `BAAI/bge-small-en-v1.5` index is used when
+available; the deterministic hashing backend remains an offline fallback. BM25, dense,
+and hybrid retrieval can each be run and inspected independently. These are corpus and
+engineering counts, not retrieval-quality evaluation results.
 
 ## Quick start
 
-Python 3.11–3.13 is recommended. Python 3.14 support depends on upstream wheels.
+Python 3.11 or newer is required.
 
 ```bash
 python -m venv .venv
-.venv/Scripts/python -m pip install -e ".[dev]"
+.venv/Scripts/python -m pip install -e ".[dev,ml]"
 irishclinicalrag ingest configs/sources.json
-irishclinicalrag retrieve "What principles guide antimicrobial prescribing?"
+irishclinicalrag validate configs/sources.json
+irishclinicalrag build-index
+irishclinicalrag retrieve "What principles guide antimicrobial prescribing?" --method hybrid --debug
 pytest
 ```
+
+Use `--method bm25`, `--method dense`, or `--method hybrid` to inspect each retrieval
+path. Model-backed dense retrieval loads the already-downloaded model locally at query
+time; it does not require Hugging Face network access after the index is built.
 
 Start the API and web interface at `http://localhost:8000`:
 
@@ -50,7 +58,9 @@ docker compose up --build
 
 The committed source catalog contains authoritative URLs, not copied clinical
 content. Downloads are checksum-addressed under `data/raw/` and recorded in an
-append-only manifest under `data/manifests/`.
+append-only manifest under `data/manifests/`. Generated raw files, passages, and vector
+artifacts are ignored by Git; the committed corpus lock records exact checksums, counts,
+versions, URLs, and the corpus fingerprint needed to reproduce the snapshot.
 
 ## Architecture
 

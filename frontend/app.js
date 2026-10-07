@@ -98,8 +98,10 @@ async function checkConnection() {
     if (!response.ok) throw new Error("Health check failed");
     const health = await response.json();
     connection.classList.add("connected");
-    connectionStatus.textContent = `API connected · ${health.indexed_chunks} chunks`;
+    const semanticStatus = health.semantic_index ? "semantic index ready" : "baseline index";
+    connectionStatus.textContent = `API connected · ${health.indexed_chunks} chunks · ${semanticStatus}`;
     document.querySelector("#indexed-count").textContent = health.indexed_chunks;
+    document.querySelector("#document-count").textContent = health.indexed_documents;
   } catch {
     connectionStatus.textContent = "API unavailable";
   }

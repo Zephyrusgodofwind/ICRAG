@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from datetime import UTC, date, datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
+
+DatePrecision = Literal["day", "month", "year", "unknown"]
 
 
 class SourceDocument(BaseModel):
@@ -19,7 +21,9 @@ class SourceDocument(BaseModel):
     title: str = Field(min_length=3)
     url: HttpUrl
     publication_date: date | None = None
+    publication_date_precision: DatePrecision = "unknown"
     last_updated: date | None = None
+    last_updated_precision: DatePrecision = "unknown"
     topic: str = Field(min_length=2)
     clinical_specialty: str | None = None
     document_version: str | None = None
@@ -74,7 +78,9 @@ class EvidenceChunk(BaseModel):
     section: str
     url: HttpUrl
     publication_date: date | None = None
+    publication_date_precision: DatePrecision = "unknown"
     last_updated: date | None = None
+    last_updated_precision: DatePrecision = "unknown"
     retrieved_at: datetime
     topic: str
     content: str = Field(min_length=1)
@@ -95,6 +101,36 @@ class RetrievalResult(BaseModel):
     rank: int = Field(ge=1)
     retriever: str
     component_scores: dict[str, float] = Field(default_factory=dict)
+
+
+class DenseIndexMetadata(BaseModel):
+    """Versioned description of a persistent dense-vector index."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: int = 1
+    backend: str
+    model_name: str
+    dimensions: int = Field(ge=1)
+    chunk_ids: list[str]
+    corpus_fingerprint: str = Field(pattern=r"^[a-f0-9]{64}$")
+    query_prefix: str = ""
+    created_at: datetime
+
+
+class CorpusValidationReport(BaseModel):
+    """Machine-readable corpus gate emitted after every ingestion run."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    valid: bool
+    document_count: int = Field(ge=0)
+    chunk_count: int = Field(ge=0)
+    corpus_fingerprint: str = Field(pattern=r"^[a-f0-9]{64}$")
+    errors: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    chunks_per_document: dict[str, int] = Field(default_factory=dict)
+    generated_at: datetime
 
 
 class RetrievalMetadata(BaseModel):

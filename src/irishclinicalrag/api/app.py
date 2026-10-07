@@ -33,7 +33,7 @@ def create_app(
             chunks = load_chunks(data_dir)
             if not chunks:
                 raise HTTPException(status_code=503, detail="No corpus index is available")
-            response = retrieve(question, chunks, load_settings(config_path))
+            response = retrieve(question, chunks, load_settings(config_path), data_dir=data_dir)
             metrics.record_query(response.retrieval_metadata.latency_ms)
             return response
         except HTTPException:
@@ -44,8 +44,14 @@ def create_app(
             raise HTTPException(status_code=500, detail="Retrieval failed") from exc
 
     @app.get("/health")
-    def health() -> dict[str, str | int]:
-        return {"status": "ok", "indexed_chunks": len(load_chunks(data_dir))}
+    def health() -> dict[str, str | int | bool]:
+        chunks = load_chunks(data_dir)
+        return {
+            "status": "ok",
+            "indexed_chunks": len(chunks),
+            "indexed_documents": len({chunk.document_id for chunk in chunks}),
+            "semantic_index": (data_dir / "index" / "dense-index.json").exists(),
+        }
 
     @app.post("/retrieve", response_model=RetrieveResponse)
     def retrieve_endpoint(request: QueryRequest) -> RetrieveResponse:
@@ -83,7 +89,9 @@ def create_app(
                 "publication_date": (
                     chunk.publication_date.isoformat() if chunk.publication_date else None
                 ),
+                "publication_date_precision": chunk.publication_date_precision,
                 "last_updated": chunk.last_updated.isoformat() if chunk.last_updated else None,
+                "last_updated_precision": chunk.last_updated_precision,
             }
         return list(unique.values())
 
