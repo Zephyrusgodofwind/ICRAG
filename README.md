@@ -13,7 +13,7 @@ date, URL, retrieved passage, score, and evidence-sufficiency information.
 
 ## Current milestone
 
-Day 2 establishes a validated, multi-topic Irish evidence path:
+A validated, multi-topic Irish evidence path:
 
 ```text
 official Irish source -> immutable download -> parse -> section-aware chunk
