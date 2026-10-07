@@ -1,6 +1,10 @@
 from datetime import UTC, datetime
 
-from irishclinicalrag.citations.verification import build_citations, verify_citations
+from irishclinicalrag.citations.verification import (
+    build_citations,
+    verify_answer_citations,
+    verify_citations,
+)
 from irishclinicalrag.models import EvidenceChunk, RetrievalResult
 
 
@@ -25,4 +29,7 @@ def test_citations_map_exactly_to_retrieved_chunks() -> None:
     assert verify_citations(citations, [result])
     assert citations[0].passage == chunk.content
     assert citations[0].citation_id == "[1]"
-
+    assert verify_answer_citations("Supported statement. [1]", citations)
+    assert not verify_answer_citations("Unsupported statement.", citations)
+    assert not verify_answer_citations("Invented citation. [9]", citations)
+    assert not verify_answer_citations("Supported. [1]\n\nUncited claim.", citations)

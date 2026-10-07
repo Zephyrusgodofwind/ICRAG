@@ -30,12 +30,27 @@ INSUFFICIENT_MESSAGE = (
     "sources to answer this reliably."
 )
 
+QUERY_STOPWORDS = {
+    "about",
+    "covers",
+    "guidance",
+    "how",
+    "recommended",
+    "should",
+    "the",
+    "treatment",
+    "what",
+    "when",
+    "which",
+}
+
 
 @dataclass(frozen=True, slots=True)
 class EvidenceAssessment:
     sufficient: bool
     confidence: float
     query_coverage: float
+    relevance_score: float | None = None
 
 
 def is_emergency_query(query: str) -> bool:
@@ -44,14 +59,25 @@ def is_emergency_query(query: str) -> bool:
 
 
 def assess_evidence(query: str, results: list[RetrievalResult]) -> EvidenceAssessment:
-    query_terms = {term for term in normalize_tokens(query) if len(term) > 2}
+    query_terms = {
+        term
+        for term in normalize_tokens(query)
+        if len(term) > 2 and term not in QUERY_STOPWORDS
+    }
     if not results or not query_terms:
         return EvidenceAssessment(sufficient=False, confidence=0.0, query_coverage=0.0)
     evidence_terms = set()
     for result in results[:3]:
         evidence_terms.update(normalize_tokens(result.chunk.content))
     coverage = len(query_terms & evidence_terms) / len(query_terms)
-    sufficient = coverage >= 0.25
+    reranker_scores = [
+        result.component_scores["reranker_raw"]
+        for result in results
+        if "reranker_raw" in result.component_scores
+    ]
+    relevance_score = max(reranker_scores) if reranker_scores else None
+    reranker_supports = relevance_score is None or relevance_score >= 0.0
+    sufficient = coverage >= 0.25 and reranker_supports
     confidence = min(0.95, 0.2 + 0.55 * coverage + 0.04 * min(len(results), 5))
     if not sufficient:
         confidence = min(confidence, 0.39)
@@ -59,5 +85,5 @@ def assess_evidence(query: str, results: list[RetrievalResult]) -> EvidenceAsses
         sufficient=sufficient,
         confidence=round(confidence, 3),
         query_coverage=round(coverage, 3),
+        relevance_score=round(relevance_score, 3) if relevance_score is not None else None,
     )
-

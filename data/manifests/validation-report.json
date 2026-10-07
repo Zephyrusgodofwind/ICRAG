@@ -2,7 +2,7 @@
   "valid": true,
   "document_count": 8,
   "chunk_count": 692,
-  "corpus_fingerprint": "aabbbb57ab1284a786020a9aaae8929f90a9205b7332d5571f9482458185e213",
+  "corpus_fingerprint": "6a92d8f3b1b30c1fecb3263c1043e08be5248f06daa1eab64d3610c08f08dae1",
   "errors": [],
   "warnings": [
     "6 exact chunk texts recur across documents; review if unexpected"
@@ -17,5 +17,5 @@
     "ncec-ipc-guideline-30-volume-1-2025": 360,
     "ncec-ipc-guideline-30-volume-2-2025": 158
   },
-  "generated_at": "2026-10-07T01:23:14.953937Z"
+  "generated_at": "2026-10-07T01:40:54.104086Z"
 }

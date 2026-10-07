@@ -7,4 +7,5 @@ services:
       - ./data:/app/data
     environment:
       IRISHCLINICALRAG_LOG_LEVEL: INFO
+      HF_HOME: /app/data/models/huggingface
     restart: unless-stopped

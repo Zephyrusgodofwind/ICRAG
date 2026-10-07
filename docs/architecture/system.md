@@ -12,7 +12,8 @@ flowchart LR
     F --> H["Persistent BGE dense index"]
     G --> I["Reciprocal Rank Fusion"]
     H --> I
-    I --> K["Evidence contract"]
+    I --> J["Cross-encoder reranker"]
+    J --> K["Evidence contract"]
     K --> L["Safety + generation"]
     L --> M["FastAPI / web UI"]
 ```
@@ -24,5 +25,5 @@ flowchart LR
 - Sparse and dense retrieval can be evaluated independently.
 - Fusion consumes ranks, avoiding invalid comparison of unrelated score scales.
 - The semantic index is bound to the corpus fingerprint and exact chunk order.
-- Model-backed embeddings, planned rerankers, and generation providers are replaceable.
+- Model-backed embeddings, rerankers, and generation providers are replaceable.
 - Retrieval-only operation requires no external LLM and remains testable offline.

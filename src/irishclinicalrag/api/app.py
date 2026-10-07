@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from irishclinicalrag.generation.providers import provider_from_settings
 from irishclinicalrag.generation.service import answer_from_evidence
 from irishclinicalrag.models import AnswerResponse, QueryRequest, RetrieveResponse
 from irishclinicalrag.observability.metrics import MetricsStore
@@ -33,7 +34,14 @@ def create_app(
             chunks = load_chunks(data_dir)
             if not chunks:
                 raise HTTPException(status_code=503, detail="No corpus index is available")
-            response = retrieve(question, chunks, load_settings(config_path), data_dir=data_dir)
+            settings = load_settings(config_path)
+            response = retrieve(
+                question,
+                chunks,
+                settings,
+                data_dir=data_dir,
+                method=settings.retrieval.default_method,
+            )
             metrics.record_query(response.retrieval_metadata.latency_ms)
             return response
         except HTTPException:
@@ -71,10 +79,12 @@ def create_app(
                 },
             )
         retrieval = run_retrieval(request.question)
+        settings = load_settings(config_path)
         return answer_from_evidence(
             request.question,
             retrieval.evidence,
             retrieval.retrieval_metadata,
+            provider=provider_from_settings(settings.generation),
         )
 
     @app.get("/sources")

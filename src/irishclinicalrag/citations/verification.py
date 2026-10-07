@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from irishclinicalrag.models import Citation, RetrievalResult
 
 
@@ -31,3 +33,18 @@ def verify_citations(citations: list[Citation], results: list[RetrievalResult]) 
             return False
     return True
 
+
+def verify_answer_citations(answer: str, citations: list[Citation]) -> bool:
+    """Require each substantive answer paragraph to cite only known evidence IDs."""
+    if not answer.strip() or not citations:
+        return False
+    allowed = {citation.citation_id for citation in citations}
+    cited = {f"[{identifier}]" for identifier in re.findall(r"\[(\d+)\]", answer)}
+    if not cited or not cited.issubset(allowed):
+        return False
+    paragraphs = [
+        paragraph.strip()
+        for paragraph in re.split(r"\n\s*\n", answer)
+        if paragraph.strip()
+    ]
+    return all(any(citation_id in paragraph for citation_id in allowed) for paragraph in paragraphs)

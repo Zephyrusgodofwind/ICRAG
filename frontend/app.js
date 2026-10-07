@@ -74,8 +74,10 @@ async function runQuery() {
       : "Evidence insufficient";
     confidence.classList.toggle("insufficient", !payload.evidence_sufficient);
     const meta = payload.retrieval_metadata;
+    const generation = payload.generation_metadata;
+    const fallback = generation.fallback_used ? " · safe fallback used" : "";
     document.querySelector("#retrieval-summary").textContent =
-      `${meta.method} · ${meta.returned} shown · ${meta.latency_ms.toFixed(1)} ms`;
+      `${meta.method} · ${generation.provider}${fallback} · ${meta.returned} shown · ${meta.latency_ms.toFixed(1)} ms`;
     renderEvidence(payload.evidence);
     results.classList.remove("hidden");
   } catch (error) {

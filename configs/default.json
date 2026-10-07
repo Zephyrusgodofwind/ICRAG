@@ -11,6 +11,21 @@
     "dense_query_prefix": "Represent this sentence for searching relevant passages: ",
     "rrf_k": 60,
     "top_k_initial": 20,
-    "top_k_final": 5
+    "top_k_final": 5,
+    "default_method": "hybrid-rerank"
+  },
+  "reranking": {
+    "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "candidate_k": 20,
+    "top_k": 5,
+    "batch_size": 16
+  },
+  "generation": {
+    "provider": "extractive",
+    "model": "",
+    "base_url": "",
+    "api_key_env": "IRISHCLINICALRAG_LLM_API_KEY",
+    "timeout_seconds": 60,
+    "temperature": 0.0
   }
 }

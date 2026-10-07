@@ -13,6 +13,8 @@ data/chunks/*
 !data/chunks/.gitkeep
 data/index/*
 !data/index/.gitkeep
+data/models/*
+!data/models/.gitkeep
 data/manifests/*.jsonl
 !data/manifests/.gitkeep
 artifacts/

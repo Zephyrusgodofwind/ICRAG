@@ -31,7 +31,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     retrieve_parser = subparsers.add_parser("retrieve", help="run evidence retrieval")
     retrieve_parser.add_argument("query")
-    retrieve_parser.add_argument("--method", choices=("bm25", "dense", "hybrid"), default="hybrid")
+    retrieve_parser.add_argument(
+        "--method", choices=("bm25", "dense", "hybrid", "hybrid-rerank"), default=None
+    )
     retrieve_parser.add_argument("--debug", action="store_true")
     retrieve_parser.add_argument("--json", action="store_true", dest="as_json")
     return parser
@@ -83,7 +85,7 @@ def main(argv: list[str] | None = None) -> int:
         load_chunks(args.data_dir),
         settings,
         data_dir=args.data_dir,
-        method=args.method,
+        method=args.method or settings.retrieval.default_method,
     )
     if args.as_json:
         print(response.model_dump_json(indent=2))

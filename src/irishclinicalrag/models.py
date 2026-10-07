@@ -167,6 +167,13 @@ class Citation(BaseModel):
     retrieval_score: float
 
 
+class GenerationMetadata(BaseModel):
+    provider: str
+    latency_ms: float = Field(ge=0)
+    citations_verified: bool
+    fallback_used: bool = False
+
+
 class AnswerResponse(BaseModel):
     answer: str
     evidence: list[RetrievalResult]
@@ -176,6 +183,7 @@ class AnswerResponse(BaseModel):
     limitations: str
     safety_status: str
     retrieval_metadata: RetrievalMetadata
+    generation_metadata: GenerationMetadata
 
 
 def utc_now() -> datetime:

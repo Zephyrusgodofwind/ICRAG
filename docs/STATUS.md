@@ -12,8 +12,8 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [x] Dense retrieval using a persistent BGE-small index
 - [x] BM25 retrieval
 - [x] Hybrid retrieval using reciprocal-rank fusion
-- [ ] Cross-encoder reranking
-- [~] Source-grounded generation with replaceable provider
+- [x] Cross-encoder reranking
+- [x] Source-grounded generation with replaceable provider
 - [x] Explicit citations with exact chunk provenance verification
 - [x] Deterministic emergency escalation and evidence abstention layer
 - [ ] 100–150-case evaluation dataset
@@ -23,7 +23,7 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [~] Docker Compose configuration implemented; runtime verification pending (Docker unavailable)
 - [x] README skeleton and architecture diagram
 - [ ] Demo screenshots/video
-- [x] Critical component tests (20 passing; 73.82% statement coverage)
+- [x] Critical component tests (29 passing; 75.36% statement coverage)
 
 ## Day 1 milestone
 
@@ -49,6 +49,26 @@ Implemented and locally verified:
 - Smoke-checked synthetic COPD, UTI, penicillin-allergy, and infection-control questions;
   the expected authoritative document ranked first in the recorded checks. This is a
   functional smoke check, not a formal quality metric or evaluation claim.
+
+## Day 3 milestone
+
+Implemented and locally verified:
+
+- Added `cross-encoder/ms-marco-MiniLM-L6-v2` as a separately selectable reranking
+  stage over 20 RRF candidates, preserving pre-rerank ranks and component scores.
+- Added answer-level citation validation: every substantive paragraph must cite a known,
+  exact retrieved chunk; invalid provider output falls back to the extractive baseline.
+- Added a configurable OpenAI-compatible provider for local, hosted, or RunPod models.
+  It reads its credential only from `IRISHCLINICALRAG_LLM_API_KEY`; no remote provider
+  has been enabled or claimed as tested.
+- Normalised private-use PDF bullet glyphs and regenerated the 692-chunk corpus and
+  semantic index under fingerprint
+  `6a92d8f3b1b30c1fecb3263c1043e08be5248f06daa1eab64d3610c08f08dae1`.
+- Measured the reranked path at approximately 14 seconds on cold CPU model loading and
+  2.0 seconds warm for the recorded local smoke run. These are engineering timings, not
+  retrieval-quality metrics.
+- End-to-end API checks returned a cited HSE COPD answer, abstained on an unsupported
+  synthetic topic, and bypassed retrieval for an emergency query.
 
 ## Research questions
 

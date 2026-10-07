@@ -1,0 +1,22 @@
+{
+  "experiment": "day3_reranked_rag_smoke",
+  "date": "2026-10-07",
+  "git_base_commit": "127264087ae4fe9443d764900cbe7bad5552ce39",
+  "corpus_fingerprint": "6a92d8f3b1b30c1fecb3263c1043e08be5248f06daa1eab64d3610c08f08dae1",
+  "retrieval": {
+    "sparse": "bm25",
+    "dense_model": "BAAI/bge-small-en-v1.5",
+    "fusion": "reciprocal-rank-fusion",
+    "rrf_k": 60,
+    "candidate_k": 20
+  },
+  "reranking": {
+    "model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "top_k": 5
+  },
+  "generation": {
+    "provider": "extractive-evidence-baseline",
+    "citation_validation": "every paragraph must cite an exact retrieved chunk"
+  },
+  "scope": "Functional smoke test only; no retrieval-quality result is claimed."
+}

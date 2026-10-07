@@ -8,6 +8,19 @@ from pathlib import Path
 
 from irishclinicalrag.models import ParsedSection
 
+PDF_GLYPH_REPLACEMENTS = str.maketrans(
+    {
+        "\uf0b7": "•",
+        "\uf0a7": "•",
+        "\uf0d8": "•",
+    }
+)
+
+
+def normalize_extracted_text(text: str) -> str:
+    """Replace common private-use PDF bullets with portable Unicode."""
+    return text.translate(PDF_GLYPH_REPLACEMENTS)
+
 
 class _TextHTMLParser(HTMLParser):
     def __init__(self) -> None:
@@ -65,7 +78,8 @@ def parse_pdf(path: Path, default_title: str) -> list[ParsedSection]:
     reader = PdfReader(path)
     sections: list[ParsedSection] = []
     for page_number, page in enumerate(reader.pages, start=1):
-        text = re.sub(r"[ \t]+", " ", page.extract_text() or "")
+        text = normalize_extracted_text(page.extract_text() or "")
+        text = re.sub(r"[ \t]+", " ", text)
         text = re.sub(r"\n{3,}", "\n\n", text).strip()
         if text:
             sections.append(
@@ -92,4 +106,3 @@ def parse_document(path: Path, media_type: str, default_title: str) -> list[Pars
     if not text:
         raise ValueError(f"No text found in document: {path}")
     return [ParsedSection(heading=default_title, content=text)]
-

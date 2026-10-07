@@ -20,6 +20,7 @@ from irishclinicalrag.models import (
     SourceDocument,
 )
 from irishclinicalrag.parsing.documents import parse_document
+from irishclinicalrag.reranking.cross_encoder import CrossEncoderReranker
 from irishclinicalrag.retrieval.bm25 import BM25Retriever
 from irishclinicalrag.retrieval.dense import HashingDenseRetriever
 from irishclinicalrag.retrieval.hybrid import HybridRetriever
@@ -130,9 +131,9 @@ def retrieve(
     method: str = "hybrid",
 ) -> RetrieveResponse:
     started = time.perf_counter()
-    sparse = BM25Retriever(chunks) if method in {"bm25", "hybrid"} else None
+    sparse = BM25Retriever(chunks) if method in {"bm25", "hybrid", "hybrid-rerank"} else None
     dense = None
-    if method in {"dense", "hybrid"}:
+    if method in {"dense", "hybrid", "hybrid-rerank"}:
         index_path = data_dir / "index"
         use_semantic = settings.retrieval.dense_backend == "sentence-transformers" or (
             settings.retrieval.dense_backend == "auto"
@@ -146,20 +147,42 @@ def retrieve(
     if method == "bm25":
         assert sparse is not None
         evidence = sparse.search(query, top_k=settings.retrieval.top_k_final)
+        candidate_count = len(evidence)
         active_method = sparse.name
     elif method == "dense":
         assert dense is not None
         evidence = dense.search(query, top_k=settings.retrieval.top_k_final)
+        candidate_count = len(evidence)
         active_method = dense.name
-    elif method == "hybrid":
+    elif method in {"hybrid", "hybrid-rerank"}:
         assert sparse is not None and dense is not None
         hybrid = HybridRetriever([sparse, dense], rrf_k=settings.retrieval.rrf_k)
-        evidence = hybrid.search(
-            query,
-            top_k=settings.retrieval.top_k_final,
-            candidate_k=settings.retrieval.top_k_initial,
+        candidate_k = (
+            settings.reranking.candidate_k
+            if method == "hybrid-rerank"
+            else settings.retrieval.top_k_initial
         )
-        active_method = hybrid.name
+        hybrid_top_k = (
+            settings.reranking.candidate_k
+            if method == "hybrid-rerank"
+            else settings.retrieval.top_k_final
+        )
+        candidates = hybrid.search(
+            query,
+            top_k=hybrid_top_k,
+            candidate_k=candidate_k,
+        )
+        candidate_count = len(candidates)
+        if method == "hybrid-rerank":
+            reranker = CrossEncoderReranker(
+                settings.reranking.model,
+                batch_size=settings.reranking.batch_size,
+            )
+            evidence = reranker.rerank(query, candidates, top_k=settings.reranking.top_k)
+            active_method = f"{hybrid.name}+cross-encoder"
+        else:
+            evidence = candidates
+            active_method = hybrid.name
     else:
         raise ValueError(f"unknown retrieval method: {method}")
     elapsed_ms = (time.perf_counter() - started) * 1000
@@ -168,7 +191,7 @@ def retrieve(
         evidence=evidence,
         retrieval_metadata=RetrievalMetadata(
             method=active_method,
-            candidates=min(len(chunks), settings.retrieval.top_k_initial * 2),
+            candidates=candidate_count,
             returned=len(evidence),
             latency_ms=elapsed_ms,
             parameters={
@@ -183,6 +206,12 @@ def retrieve(
                     dense.metadata.corpus_fingerprint
                     if isinstance(dense, IndexedDenseRetriever)
                     else None
+                ),
+                "reranker_model": (
+                    settings.reranking.model if method == "hybrid-rerank" else None
+                ),
+                "rerank_candidate_k": (
+                    settings.reranking.candidate_k if method == "hybrid-rerank" else None
                 ),
             },
         ),

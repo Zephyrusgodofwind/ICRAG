@@ -8,14 +8,14 @@ WORKDIR /app
 
 COPY pyproject.toml README.md LICENSE ./
 COPY src ./src
-RUN python -m pip install .
+RUN python -m pip install ".[ml]"
 
 COPY configs ./configs
 COPY frontend ./frontend
 COPY scripts/docker-entrypoint.sh ./scripts/docker-entrypoint.sh
 
 RUN useradd --create-home --uid 10001 appuser \
-    && mkdir -p /app/data/raw /app/data/chunks /app/data/manifests \
+    && mkdir -p /app/data/raw /app/data/chunks /app/data/index /app/data/manifests /app/data/models \
     && chown -R appuser:appuser /app
 
 USER appuser
