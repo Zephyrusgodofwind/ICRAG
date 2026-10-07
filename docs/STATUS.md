@@ -49,9 +49,9 @@ PubMed ingestion) remains out of scope until every non-negotiable item is comple
 
 ## Daily delivery discipline
 
-- [x] Git repository initialized and first verified commit prepared
-- [ ] GitHub remote configured
-- [ ] Today's verified commit pushed and remote acceptance confirmed
+- [x] Git repository initialized with verified commits
+- [x] GitHub remote configured: `Zephyrusgodofwind/ICRAG`
+- [x] Today's verified commits pushed and remote acceptance confirmed
 
 Daily GitHub pushes are a non-negotiable delivery requirement. The exact closeout
 procedure is defined in `AGENTS.md`.
