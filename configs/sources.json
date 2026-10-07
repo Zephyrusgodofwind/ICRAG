@@ -1,0 +1,18 @@
+{
+  "sources": [
+    {
+      "document_id": "hse-amric-ams-guidance-v1-2022",
+      "source": "HSE",
+      "source_type": "clinical_guideline",
+      "title": "HSE Antimicrobial Stewardship Guidance for All Healthcare Settings",
+      "url": "https://healthservice.hse.ie/documents/7109/HSE_Antimicrobial_Stewardship_guidance_for_all_healthcare_settings.pdf",
+      "publication_date": "2022-08-01",
+      "last_updated": null,
+      "topic": "antimicrobial stewardship",
+      "clinical_specialty": "infectious diseases",
+      "document_version": "1",
+      "language": "en",
+      "country": "Ireland"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Evidence-grounded retrieval from Irish clinical guidance">
+    <title>IrishClinicalRAG</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="brand-mark" aria-hidden="true">IC</div>
+      <div>
+        <h1>IrishClinicalRAG</h1>
+        <p>Evidence-grounded Irish clinical guidance</p>
+      </div>
+      <span class="research-badge">Research preview</span>
+    </header>
+
+    <main>
+      <section class="notice" aria-label="Safety and privacy notice">
+        <strong>Decision-support research only.</strong>
+        Not a medical device or a replacement for clinical judgement. Do not enter patient data.
+        For an emergency in Ireland, call 112 or 999.
+      </section>
+
+      <section class="query-panel">
+        <label for="question">Clinical evidence question</label>
+        <div class="query-row">
+          <textarea id="question" rows="3" maxlength="2000"
+            placeholder="What principles should guide antimicrobial prescribing?"></textarea>
+          <button id="ask" type="button">Search evidence</button>
+        </div>
+        <div class="examples" aria-label="Example questions">
+          <span>Try:</span>
+          <button class="example" type="button">How should antimicrobial prescriptions be reviewed?</button>
+          <button class="example" type="button">What is the role of prescribers in stewardship?</button>
+        </div>
+      </section>
+
+      <section id="loading" class="loading hidden" aria-live="polite">Searching Irish guidance…</section>
+      <section id="error" class="error hidden" role="alert"></section>
+
+      <section id="results" class="results hidden" aria-live="polite">
+        <div class="answer-header">
+          <div>
+            <p class="eyebrow">Evidence-grounded response</p>
+            <h2>Answer</h2>
+          </div>
+          <div id="confidence" class="confidence"></div>
+        </div>
+        <div id="answer" class="answer"></div>
+        <p id="limitations" class="limitations"></p>
+
+        <div class="evidence-heading">
+          <div>
+            <p class="eyebrow">Inspectable provenance</p>
+            <h2>Evidence</h2>
+          </div>
+          <div id="retrieval-summary" class="retrieval-summary"></div>
+        </div>
+        <div id="evidence" class="evidence-list"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Public sources · Synthetic questions only</span>
+      <a href="/docs">API documentation</a>
+    </footer>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>

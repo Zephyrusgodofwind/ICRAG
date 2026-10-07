@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+.coverage
+htmlcov
+artifacts
+data/raw
+data/processed
+data/chunks
+data/manifests/*.jsonl
+tests
+*.pyc

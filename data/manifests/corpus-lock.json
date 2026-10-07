@@ -1,0 +1,17 @@
+{
+  "corpus_version": "2026-10-07.1",
+  "generated_at": "2026-10-07T00:25:35.857927Z",
+  "documents": [
+    {
+      "document_id": "hse-amric-ams-guidance-v1-2022",
+      "source": "HSE",
+      "title": "HSE Antimicrobial Stewardship Guidance for All Healthcare Settings",
+      "url": "https://healthservice.hse.ie/documents/7109/HSE_Antimicrobial_Stewardship_guidance_for_all_healthcare_settings.pdf",
+      "sha256": "643e1cb4aefa1e724f53b73ca01cebfab52783b734c192296bd257a75fe283fd",
+      "byte_count": 13927534,
+      "number_of_chunks": 146,
+      "publication_date": "2022-08-01",
+      "document_version": "1"
+    }
+  ]
+}

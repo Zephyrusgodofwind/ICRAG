@@ -1,0 +1,2 @@
+"""Metadata-preserving semantic chunking."""
+

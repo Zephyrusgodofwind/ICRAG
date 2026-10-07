@@ -1,0 +1,10 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      IRISHCLINICALRAG_LOG_LEVEL: INFO
+    restart: unless-stopped

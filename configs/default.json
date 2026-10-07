@@ -1,0 +1,14 @@
+{
+  "chunking": {
+    "target_tokens": 500,
+    "overlap_tokens": 80,
+    "minimum_tokens": 80
+  },
+  "retrieval": {
+    "dense_dimensions": 384,
+    "rrf_k": 60,
+    "top_k_initial": 20,
+    "top_k_final": 5
+  }
+}
+
