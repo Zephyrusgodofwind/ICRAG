@@ -98,6 +98,14 @@ def create_app(
         def frontend() -> FileResponse:
             return FileResponse(frontend_dir / "index.html")
 
+        @app.get("/styles.css", include_in_schema=False)
+        def frontend_styles() -> FileResponse:
+            return FileResponse(frontend_dir / "styles.css", media_type="text/css")
+
+        @app.get("/app.js", include_in_schema=False)
+        def frontend_script() -> FileResponse:
+            return FileResponse(frontend_dir / "app.js", media_type="text/javascript")
+
     return app
 
 

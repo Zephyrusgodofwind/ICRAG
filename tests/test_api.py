@@ -32,6 +32,9 @@ def _client(tmp_path) -> TestClient:
 def test_required_api_endpoints(tmp_path) -> None:
     client = _client(tmp_path)
 
+    assert client.get("/").status_code == 200
+    assert client.get("/styles.css").headers["content-type"].startswith("text/css")
+    assert client.get("/app.js").headers["content-type"].startswith("text/javascript")
     assert client.get("/health").json() == {"status": "ok", "indexed_chunks": 1}
     assert client.get("/sources").json()[0]["source"] == "HSE"
     retrieval = client.post(

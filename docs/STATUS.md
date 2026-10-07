@@ -23,7 +23,16 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [~] Docker Compose configuration implemented; runtime verification pending (Docker unavailable)
 - [x] README skeleton and architecture diagram
 - [ ] Demo screenshots/video
-- [~] Critical component tests (10 passing; 75% measured statement coverage)
+- [~] Critical component tests (11 passing after the UI revision; 76.09% coverage)
+
+## Day 1 milestone
+
+Complete: one authoritative HSE document travels through immutable download, parsing,
+metadata-aware chunking, indexing, BM25 and dense-baseline retrieval, reciprocal-rank
+fusion, API delivery, safety handling, citations, and a usable evidence interface.
+
+Day 1 closeout is blocked only on the user-created GitHub repository URL. The verified
+local commits will be pushed as soon as that remote exists.
 
 ## Research questions
 
