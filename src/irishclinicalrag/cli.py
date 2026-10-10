@@ -6,6 +6,13 @@ import argparse
 import sys
 from pathlib import Path
 
+from irishclinicalrag.evaluation.dataset import build_evaluation_dataset
+from irishclinicalrag.evaluation.runner import (
+    METHODS,
+    load_evaluation_cases,
+    run_experiment,
+    write_experiment_outputs,
+)
 from irishclinicalrag.models import ManifestRecord
 from irishclinicalrag.pipeline import ingest_catalog, load_chunks, load_source_catalog, retrieve
 from irishclinicalrag.retrieval.index import build_dense_index
@@ -28,6 +35,27 @@ def build_parser() -> argparse.ArgumentParser:
 
     build_index = subparsers.add_parser("build-index", help="build a persistent semantic index")
     build_index.add_argument("--model", default=None)
+
+    build_eval = subparsers.add_parser(
+        "build-eval", help="build the reviewed and deterministic evaluation dataset"
+    )
+    build_eval.add_argument(
+        "--curated", type=Path, default=Path("data/eval/curated.jsonl")
+    )
+    build_eval.add_argument(
+        "--output", type=Path, default=Path("data/eval/questions.jsonl")
+    )
+
+    evaluate = subparsers.add_parser("evaluate", help="run the reproducible evaluation matrix")
+    evaluate.add_argument(
+        "dataset", type=Path, nargs="?", default=Path("data/eval/questions.jsonl")
+    )
+    evaluate.add_argument(
+        "--output-dir", type=Path, default=Path("experiments/results/day4")
+    )
+    evaluate.add_argument("--methods", nargs="+", choices=METHODS, default=list(METHODS))
+    evaluate.add_argument("--limit", type=int, default=None)
+    evaluate.add_argument("--skip-rag", action="store_true")
 
     retrieve_parser = subparsers.add_parser("retrieve", help="run evidence retrieval")
     retrieve_parser.add_argument("query")
@@ -77,6 +105,39 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"Built {metadata.backend} index: {len(metadata.chunk_ids)} chunks, "
             f"{metadata.dimensions} dimensions, model={metadata.model_name}"
+        )
+        return 0
+
+    if args.command == "build-eval":
+        cases = build_evaluation_dataset(
+            load_chunks(args.data_dir), args.curated, args.output
+        )
+        curated_count = sum(case.cohort == "curated" for case in cases)
+        print(
+            f"Built {len(cases)} evaluation cases at {args.output} "
+            f"({curated_count} curated, {len(cases) - curated_count} probes)"
+        )
+        return 0
+
+    if args.command == "evaluate":
+        cases = load_evaluation_cases(args.dataset)
+        if args.limit is not None:
+            if args.limit < 1:
+                raise ValueError("--limit must be at least 1")
+            cases = cases[: args.limit]
+        result, predictions = run_experiment(
+            cases,
+            load_chunks(args.data_dir),
+            settings,
+            args.data_dir,
+            args.dataset,
+            methods=tuple(args.methods),
+            include_rag=not args.skip_rag,
+        )
+        write_experiment_outputs(args.output_dir, result, predictions)
+        print(
+            f"Evaluated {len(cases)} cases across {len(args.methods)} methods; "
+            f"results: {args.output_dir / 'metrics.json'}"
         )
         return 0
 

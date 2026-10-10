@@ -36,6 +36,8 @@ python -m venv .venv
 irishclinicalrag ingest configs/sources.json
 irishclinicalrag validate configs/sources.json
 irishclinicalrag build-index
+irishclinicalrag build-eval
+irishclinicalrag evaluate
 irishclinicalrag retrieve "What principles guide antimicrobial prescribing?" --method hybrid --debug
 pytest
 ```
@@ -44,6 +46,12 @@ Use `--method bm25`, `--method dense`, `--method hybrid`, or
 `--method hybrid-rerank` to inspect each retrieval path. Model-backed retrieval loads
 already-downloaded models locally at query time; it does not require Hugging Face network
 access after the models are cached.
+
+`build-eval` deterministically combines 25 manually authored, source-checked questions
+with 75 labelled lexical probes. `evaluate` compares BM25, dense, hybrid, and
+hybrid-plus-reranker retrieval and writes machine-readable predictions and metrics.
+The reviewed cohort is always reported separately from the easier probes. See
+[docs/EVALUATION.md](docs/EVALUATION.md) for the protocol and limitations.
 
 ## Grounded answer generation
 
