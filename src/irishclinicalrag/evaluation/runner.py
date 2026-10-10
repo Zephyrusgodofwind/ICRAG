@@ -177,6 +177,8 @@ def run_experiment(
     evidence_by_case: dict[str, list[RetrievalResult]] = {}
 
     for method in methods:
+        # Keep model-loading and one-time initialization out of per-query latency.
+        runner.search(method, cases[0].question)
         predictions: list[RetrievalPrediction] = []
         for case in cases:
             evidence, latency_ms, _ = runner.search(method, case.question)
@@ -275,6 +277,8 @@ def run_experiment(
             "chunk_overlap_tokens": settings.chunking.overlap_tokens,
             "chunk_minimum_tokens": settings.chunking.minimum_tokens,
             "prompt_version": "extractive-evidence-v1",
+            "warmup_queries_per_method": 1,
+            "latency_scope": "warm query execution; model loading excluded",
         },
         "retrieval": method_summaries,
         "rag": rag_summary,
@@ -310,7 +314,7 @@ def _comparison_markdown(result: dict[str, object]) -> str:
         "# Day 4 retrieval comparison\n",
         "Metrics are measured on the committed dataset. See `metrics.json` for full precision, "
         "source-recall, latency, cohort, model, and limitation details.\n",
-        "| Method | Cohort | Recall@5 | MRR | nDCG@5 | Source recall@5 | Mean latency (ms) |",
+        "| Method | Cohort | Recall@5 | MRR | nDCG@5 | Source recall@5 | Median latency (ms) |",
         "|---|---:|---:|---:|---:|---:|---:|",
     ]
     for method, cohorts in retrieval.items():
@@ -321,7 +325,7 @@ def _comparison_markdown(result: dict[str, object]) -> str:
             lines.append(
                 f"| {method} | {cohort} | {metrics['recall@5']:.3f} | "
                 f"{metrics['mrr']:.3f} | {metrics['ndcg@5']:.3f} | "
-                f"{metrics['source_recall@5']:.3f} | {metrics['latency_mean_ms']:.1f} |"
+                f"{metrics['source_recall@5']:.3f} | {metrics['latency_median_ms']:.1f} |"
             )
     lines.append("\nThese results do not establish clinical validity or medical correctness.\n")
     return "\n".join(lines)

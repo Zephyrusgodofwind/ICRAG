@@ -37,7 +37,8 @@ The required comparison runs the same questions through:
 
 For each method and cohort, the runner records Precision@5, Recall@5, Hit Rate@5, MRR,
 nDCG@5, source-level equivalents, and latency. Chunk relevance and source-document
-relevance are measured separately.
+relevance are measured separately. Each method receives one unmeasured warm-up query so
+model loading does not distort per-query mean, median, or p95 latency.
 
 ```bash
 irishclinicalrag evaluate --output-dir experiments/results/day4
