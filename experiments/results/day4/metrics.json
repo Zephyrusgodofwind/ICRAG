@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "experiment": "day4-retrieval-and-grounded-rag",
+  "generated_at": "2026-10-13T07:41:35.146800Z",
+  "git_commit": "a704bb17fc05b41e7dd856cc10de732752cb7433",
+  "dataset": {
+    "path": "data/eval/questions.jsonl",
+    "sha256": "1184608b855cfefcfa90beedac809128ec637cb6d2058048f2151e3856928f54",
+    "case_count": 100,
+    "curated_count": 25,
+    "synthetic_probe_count": 75
+  },
+  "corpus_fingerprint": "6a92d8f3b1b30c1fecb3263c1043e08be5248f06daa1eab64d3610c08f08dae1",
+  "models": {
+    "dense": "BAAI/bge-small-en-v1.5",
+    "reranker": "cross-encoder/ms-marco-MiniLM-L6-v2",
+    "generation": "extractive-evidence-baseline"
+  },
+  "parameters": {
+    "top_k": 5,
+    "candidate_k": 20,
+    "rrf_k": 60,
+    "chunk_target_tokens": 500,
+    "chunk_overlap_tokens": 80,
+    "chunk_minimum_tokens": 80,
+    "prompt_version": "extractive-evidence-v1",
+    "warmup_queries_per_method": 1,
+    "latency_scope": "warm query execution; model loading excluded"
+  },
+  "retrieval": {
+    "bm25": {
+      "all": {
+        "case_count": 100,
+        "precision@5": 0.20400000000000001,
+        "recall@5": 0.955,
+        "hit_rate@5": 0.96,
+        "mrr": 0.812,
+        "ndcg@5": 0.8488756894912978,
+        "source_precision@5": 0.2,
+        "source_recall@5": 1.0,
+        "source_hit_rate@5": 1.0,
+        "source_mrr": 0.975,
+        "source_ndcg@5": 0.9815464876785728,
+        "latency_mean_ms": 2.804915000000392,
+        "latency_median_ms": 2.6731500000067854,
+        "latency_p95_ms": 3.868799999992234
+      },
+      "curated": {
+        "case_count": 25,
+        "precision@5": 0.21600000000000003,
+        "recall@5": 0.82,
+        "hit_rate@5": 0.84,
+        "mrr": 0.6413333333333334,
+        "ndcg@5": 0.6864705255365996,
+        "source_precision@5": 0.2,
+        "source_recall@5": 1.0,
+        "source_hit_rate@5": 1.0,
+        "source_mrr": 0.94,
+        "source_ndcg@5": 0.9557115704285749,
+        "latency_mean_ms": 2.4297039999987646,
+        "latency_median_ms": 2.332300000006171,
+        "latency_p95_ms": 3.107699999986835
+      },
+      "synthetic_probe": {
+        "case_count": 75,
+        "precision@5": 0.2,
+        "recall@5": 1.0,
+        "hit_rate@5": 1.0,
+        "mrr": 0.8688888888888889,
+        "ndcg@5": 0.9030107441428636,
+        "source_precision@5": 0.2,
+        "source_recall@5": 1.0,
+        "source_hit_rate@5": 1.0,
+        "source_mrr": 0.9866666666666667,
+        "source_ndcg@5": 0.9901581267619055,
+        "latency_mean_ms": 2.9299853333342676,
+        "latency_median_ms": 2.7251999999862164,
+        "latency_p95_ms": 4.0206000000182485
+      }
+    },
+    "dense": {
+      "all": {
+        "case_count": 100,
+        "precision@5": 0.11200000000000002,
+        "recall@5": 0.495,
+        "hit_rate@5": 0.5,
+        "mrr": 0.3903333333333333,
+        "ndcg@5": 0.4169657828157687,
+        "source_precision@5": 0.158,
+        "source_recall@5": 0.79,
+        "source_hit_rate@5": 0.79,
+        "source_mrr": 0.72,
+        "source_ndcg@5": 0.7380929753571458,
+        "latency_mean_ms": 53.48372199999914,
+        "latency_median_ms": 52.55844999999226,
+        "latency_p95_ms": 65.21219999999062
+      },
+      "curated": {
+        "case_count": 25,
+        "precision@5": 0.20800000000000002,
+        "recall@5": 0.78,
+        "hit_rate@5": 0.8,
+        "mrr": 0.66,
+        "ndcg@5": 0.6908001830420969,
+        "source_precision@5": 0.2,
+        "source_recall@5": 1.0,
+        "source_hit_rate@5": 1.0,
+        "source_mrr": 0.98,
+        "source_ndcg@5": 0.9852371901428583,
+        "latency_mean_ms": 59.364455999999564,
+        "latency_median_ms": 58.2958999999903,
+        "latency_p95_ms": 69.75289999999745
+      },
+      "synthetic_probe": {
+        "case_count": 75,
+        "precision@5": 0.08,
+        "recall@5": 0.4,
+        "hit_rate@5": 0.4,
+        "mrr": 0.30044444444444446,
+        "ndcg@5": 0.32568764940699263,
+        "source_precision@5": 0.14400000000000002,
+        "source_recall@5": 0.72,
+        "source_hit_rate@5": 0.72,
+        "source_mrr": 0.6333333333333333,
+        "source_ndcg@5": 0.655711570428575,
+        "latency_mean_ms": 51.52347733333234,
+        "latency_median_ms": 51.34229999998752,
+        "latency_p95_ms": 57.47729999998796
+      }
+    },
+    "hybrid": {
+      "all": {
+        "case_count": 100,
+        "precision@5": 0.20200000000000004,
+        "recall@5": 0.93,
+        "hit_rate@5": 0.93,
+        "mrr": 0.6663333333333334,
+        "ndcg@5": 0.7321803556360816,
+        "source_precision@5": 0.198,
+        "source_recall@5": 0.99,
+        "source_hit_rate@5": 0.99,
+        "source_mrr": 0.93,
+        "source_ndcg@5": 0.9454743802857166,
+        "latency_mean_ms": 57.36380599999933,
+        "latency_median_ms": 57.34784999999931,
+        "latency_p95_ms": 64.0036000000066
+      },
+      "curated": {
+        "case_count": 25,
+        "precision@5": 0.248,
+        "recall@5": 0.92,
+        "hit_rate@5": 0.92,
+        "mrr": 0.8266666666666667,
+        "ndcg@5": 0.8515139302195577,
+        "source_precision@5": 0.2,
+        "source_recall@5": 1.0,
+        "source_hit_rate@5": 1.0,
+        "source_mrr": 1.0,
+        "source_ndcg@5": 1.0,
+        "latency_mean_ms": 59.20573599999898,
+        "latency_median_ms": 58.76699999998891,
+        "latency_p95_ms": 66.30630000000792
+      },
+      "synthetic_probe": {
+        "case_count": 75,
+        "precision@5": 0.18666666666666668,
+        "recall@5": 0.9333333333333333,
+        "hit_rate@5": 0.9333333333333333,
+        "mrr": 0.6128888888888889,
+        "ndcg@5": 0.6924024974415897,
+        "source_precision@5": 0.19733333333333333,
+        "source_recall@5": 0.9866666666666667,
+        "source_hit_rate@5": 0.9866666666666667,
+        "source_mrr": 0.9066666666666666,
+        "source_ndcg@5": 0.9272991737142888,
+        "latency_mean_ms": 56.749829333332784,
+        "latency_median_ms": 56.60760000000664,
+        "latency_p95_ms": 62.003700000019535
+      }
+    },
+    "hybrid-rerank": {
+      "all": {
+        "case_count": 100,
+        "precision@5": 0.188,
+        "recall@5": 0.855,
+        "hit_rate@5": 0.86,
+        "mrr": 0.6798333333333333,
+        "ndcg@5": 0.7230651296019434,
+        "source_precision@5": 0.196,
+        "source_recall@5": 0.98,
+        "source_hit_rate@5": 0.98,
+        "source_mrr": 0.9116666666666667,
+        "source_ndcg@5": 0.929165082750002,
+        "latency_mean_ms": 1616.6486270000012,
+        "latency_median_ms": 1605.4355999999927,
+        "latency_p95_ms": 1777.8403000000083
+      },
+      "curated": {
+        "case_count": 25,
+        "precision@5": 0.256,
+        "recall@5": 0.94,
+        "hit_rate@5": 0.96,
+        "mrr": 0.8366666666666667,
+        "ndcg@5": 0.8578259367545478,
+        "source_precision@5": 0.2,
+        "source_recall@5": 1.0,
+        "source_hit_rate@5": 1.0,
+        "source_mrr": 1.0,
+        "source_ndcg@5": 1.0,
+        "latency_mean_ms": 1660.6714239999963,
+        "latency_median_ms": 1679.363699999982,
+        "latency_p95_ms": 1906.9556000000034
+      },
+      "synthetic_probe": {
+        "case_count": 75,
+        "precision@5": 0.16533333333333333,
+        "recall@5": 0.8266666666666667,
+        "hit_rate@5": 0.8266666666666667,
+        "mrr": 0.6275555555555556,
+        "ndcg@5": 0.6781448605510754,
+        "source_precision@5": 0.19466666666666668,
+        "source_recall@5": 0.9733333333333334,
+        "source_hit_rate@5": 0.9733333333333334,
+        "source_mrr": 0.8822222222222222,
+        "source_ndcg@5": 0.9055534436666693,
+        "latency_mean_ms": 1601.9743613333364,
+        "latency_median_ms": 1588.5438999999906,
+        "latency_p95_ms": 1777.8403000000083
+      }
+    }
+  },
+  "rag": {
+    "status": "complete",
+    "cohort": "curated",
+    "case_count": 25,
+    "metrics": {
+      "evidence_sufficient": 0.96,
+      "citation_correctness": 0.96,
+      "citation_completeness": 0.96,
+      "extractive_faithfulness": 0.96,
+      "reference_token_f1": 0.23735012181716375,
+      "expected_source_cited": 0.96
+    },
+    "judge": "deterministic checks only; no LLM-as-judge"
+  },
+  "limitations": [
+    "Synthetic probes are easier than the separately reported curated questions.",
+    "Relevance labels are sparse and may not enumerate every acceptable chunk.",
+    "RAG metrics are deterministic grounding checks, not clinical correctness ratings.",
+    "No LLM-as-judge or clinician review is represented in these results."
+  ]
+}

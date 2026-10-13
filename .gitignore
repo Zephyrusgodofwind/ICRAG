@@ -18,6 +18,7 @@ data/models/*
 data/manifests/*.jsonl
 !data/manifests/.gitkeep
 artifacts/
+experiments/results/day4-pre-warmup/
 dist/
 build/
 *.egg-info/

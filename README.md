@@ -53,6 +53,21 @@ hybrid-plus-reranker retrieval and writes machine-readable predictions and metri
 The reviewed cohort is always reported separately from the easier probes. See
 [docs/EVALUATION.md](docs/EVALUATION.md) for the protocol and limitations.
 
+### Day 4 measured comparison
+
+On the 25-question reviewed subset of the 100-case benchmark:
+
+| Retriever | Recall@5 | MRR | Median warm latency |
+|---|---:|---:|---:|
+| BM25 | 0.820 | 0.641 | 2.3 ms |
+| Dense | 0.780 | 0.660 | 58.3 ms |
+| Hybrid | 0.920 | 0.827 | 58.8 ms |
+| Hybrid + reranker | 0.940 | 0.837 | 1,679.4 ms |
+
+The reranker produced a modest quality gain at a large CPU-latency cost. These results are
+engineering measurements on a small, synthetic/non-patient benchmark—not clinical
+validation. See the [full Day 4 methodology and failure audit](docs/results/day4.md).
+
 ## Grounded answer generation
 
 The safe default is an offline extractive provider: it selects question-relevant sentences
@@ -112,8 +127,8 @@ Required API endpoints are available at `/health`, `/query`, `/retrieve`,
 
 ## Status
 
-See [docs/STATUS.md](docs/STATUS.md) for the charter checklist and measured status.
-Metrics will be published only after the benchmark has run; no result is invented.
+See [docs/STATUS.md](docs/STATUS.md) for the charter checklist and measured status. The
+committed benchmark includes aggregate metrics and all per-case retrieval predictions.
 
 ## Attribution
 

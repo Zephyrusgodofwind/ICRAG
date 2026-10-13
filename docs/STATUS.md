@@ -1,6 +1,6 @@
 # Delivery status
 
-Last updated: 2026-10-07
+Last updated: 2026-10-13
 
 Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 
@@ -16,14 +16,14 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [x] Source-grounded generation with replaceable provider
 - [x] Explicit citations with exact chunk provenance verification
 - [x] Deterministic emergency escalation and evidence abstention layer
-- [ ] 100–150-case evaluation dataset
-- [ ] Retrieval and RAG evaluation with measured results
+- [x] 100–150-case evaluation dataset (100 synthetic, non-patient cases)
+- [x] Retrieval and RAG evaluation with measured, reproducible results
 - [x] FastAPI endpoints
 - [x] Usable research-style web interface
 - [~] Docker Compose configuration implemented; runtime verification pending (Docker unavailable)
 - [x] README skeleton and architecture diagram
 - [ ] Demo screenshots/video
-- [x] Critical component tests (29 passing; 75.36% statement coverage)
+- [x] Critical component tests (34 passing; 77.80% statement coverage)
 
 ## Day 1 milestone
 
@@ -70,6 +70,29 @@ Implemented and locally verified:
 - End-to-end API checks returned a cited HSE COPD answer, abstained on an unsupported
   synthetic topic, and bypassed retrieval for an emergency query.
 
+## Day 4 milestone
+
+Complete and locally verified:
+
+- Added a committed 100-case dataset: 25 manually authored, source-checked questions and
+  75 deterministic lexical probes, reported as separate cohorts.
+- Added independently runnable BM25, dense, hybrid, and hybrid-plus-reranker evaluation
+  with Precision@5, Recall@5, Hit Rate@5, MRR, nDCG@5, source-level metrics, and latency.
+- Added deterministic grounded-answer checks for evidence sufficiency, citation
+  correctness and completeness, extractive faithfulness, expected-source citation, and
+  reference token overlap. These are regression checks, not clinical validation.
+- Corrected the latency protocol to exclude one-time model loading via one unmeasured
+  warm-up query per method.
+- Ran 400 retrieval predictions against corpus fingerprint
+  `6a92d8f3b1b30c1fecb3263c1043e08be5248f06daa1eab64d3610c08f08dae1`.
+- On the 25 reviewed questions, hybrid Recall@5/MRR measured 0.920/0.827 and
+  hybrid-plus-reranker measured 0.940/0.837. Median warm CPU latency increased from
+  58.8 ms to 1,679.4 ms with reranking.
+- Validated the dataset checksum, exact Git and corpus provenance, 400 unique
+  predictions, cohort counts, metric bounds, and grounded-answer evaluation completion.
+- Documented the exact-passage failures, one conservative RAG abstention, synthetic-probe
+  caveats, and lack of clinical validation in `docs/results/day4.md`.
+
 ## Research questions
 
 Primary: Does hybrid dense + lexical retrieval outperform either retriever alone
@@ -87,7 +110,7 @@ PubMed ingestion) remains out of scope until every non-negotiable item is comple
 
 - [x] Git repository initialized with verified commits
 - [x] GitHub remote configured: `Zephyrusgodofwind/ICRAG`
-- [x] Today's verified commits pushed and remote acceptance confirmed
+- [x] 2026-10-13 verified Day 4 commits pushed; remote acceptance confirmed
 
 Daily GitHub pushes are a non-negotiable delivery requirement. The exact closeout
 procedure is defined in `AGENTS.md`.
