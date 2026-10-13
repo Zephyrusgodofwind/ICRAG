@@ -21,7 +21,7 @@
       <nav aria-label="Primary navigation">
         <a href="#evidence-workspace">Evidence workspace</a>
         <a href="#system-method">Method</a>
-        <a id="api-docs" href="http://localhost:8000/docs">API</a>
+        <a id="api-docs" href="/docs">API</a>
       </nav>
       <div id="connection" class="connection" aria-live="polite">
         <span class="connection-dot" aria-hidden="true"></span>
@@ -124,16 +124,22 @@
         <div class="loading-heading"><span class="loading-mark"></span><strong>Searching Irish clinical guidance</strong></div>
         <div class="loading-lines"><span></span><span></span><span></span></div>
       </section>
-      <section id="error" class="error-panel hidden" role="alert"></section>
+      <section id="error" class="error-panel hidden" role="alert">
+        <span id="error-message"></span>
+        <button id="retry" class="retry-button" type="button">Retry search</button>
+      </section>
 
-      <section id="results" class="results hidden" aria-live="polite">
+      <section id="results" class="results hidden" aria-live="polite" tabindex="-1">
         <article class="answer-card">
           <div class="result-header">
             <div>
               <p class="section-label">Grounded response</p>
               <h2>Answer</h2>
             </div>
-            <div id="confidence" class="confidence"></div>
+            <div class="result-badges">
+              <div id="safety-status" class="safety-status"></div>
+              <div id="confidence" class="confidence"></div>
+            </div>
           </div>
           <div id="answer" class="answer"></div>
           <div class="limitations-block">
@@ -148,7 +154,13 @@
               <p class="section-label">Inspectable provenance</p>
               <h2>Retrieved evidence</h2>
             </div>
-            <div id="retrieval-summary" class="retrieval-summary"></div>
+            <div class="retrieval-context">
+              <div id="retrieval-summary" class="retrieval-summary"></div>
+              <details class="method-details">
+                <summary>View method details</summary>
+                <dl id="method-metadata"></dl>
+              </details>
+            </div>
           </div>
           <div id="evidence" class="evidence-list"></div>
         </section>
@@ -168,7 +180,7 @@
         <strong>IrishClinicalRAG</strong>
         <span>Public guidance · Synthetic questions · Source-transparent retrieval</span>
       </div>
-      <a href="http://localhost:8000/docs">OpenAPI documentation</a>
+      <a href="/docs">OpenAPI documentation</a>
     </footer>
     <script src="./app.js" defer></script>
   </body>

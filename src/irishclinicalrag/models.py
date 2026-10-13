@@ -169,6 +169,7 @@ class Citation(BaseModel):
 
 class GenerationMetadata(BaseModel):
     provider: str
+    model: str | None = None
     latency_ms: float = Field(ge=0)
     citations_verified: bool
     fallback_used: bool = False

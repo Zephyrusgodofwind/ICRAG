@@ -23,7 +23,7 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [~] Docker Compose configuration implemented; runtime verification pending (Docker unavailable)
 - [x] README skeleton and architecture diagram
 - [ ] Demo screenshots/video
-- [x] Critical component tests (34 passing; 77.80% statement coverage)
+- [x] Critical component tests (39 passing; 79% statement coverage)
 
 ## Day 1 milestone
 
@@ -93,6 +93,24 @@ Complete and locally verified:
 - Documented the exact-passage failures, one conservative RAG abstention, synthetic-probe
   caveats, and lack of clinical validation in `docs/results/day4.md`.
 
+## Day 5 milestone
+
+Complete and locally verified:
+
+- Extended the professional evidence interface with explicit grounded, abstaining, and
+  emergency status, source-date/version/topic metadata, citation-used versus supporting
+  evidence labels, and expandable retrieval/generation details.
+- Added resilient loading, timeout, API-error, retry, and empty-evidence states while
+  preserving the no-patient-data and research-only notices.
+- Added privacy-safe structured JSON query events that exclude raw questions, answers,
+  and passages, plus expanded aggregate request, safety, error, evidence, and latency
+  metrics.
+- Browser-tested grounded, emergency-bypass, and insufficient-evidence paths on the real
+  692-chunk corpus at desktop and 390 x 844 mobile viewports.
+- Passed 39 tests with 79% statement coverage and a clean Ruff check. One upstream
+  Starlette `TestClient`/httpx deprecation warning remains documented.
+- Recorded the full checks and limitations in `docs/DAY5_VERIFICATION.md`.
+
 ## Research questions
 
 Primary: Does hybrid dense + lexical retrieval outperform either retriever alone
@@ -111,6 +129,8 @@ PubMed ingestion) remains out of scope until every non-negotiable item is comple
 - [x] Git repository initialized with verified commits
 - [x] GitHub remote configured: `Zephyrusgodofwind/ICRAG`
 - [x] 2026-10-13 verified Day 4 commits pushed; remote acceptance confirmed
+- [~] 2026-10-13 Day 5 local verification complete; GitHub push is the remaining closeout
+  action
 
 Daily GitHub pushes are a non-negotiable delivery requirement. The exact closeout
 procedure is defined in `AGENTS.md`.

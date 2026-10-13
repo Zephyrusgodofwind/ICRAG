@@ -117,6 +117,18 @@ charter in [IrishClinicalRAG_PROJECT_PLAN.md](IrishClinicalRAG_PROJECT_PLAN.md).
 Required API endpoints are available at `/health`, `/query`, `/retrieve`,
 `/sources`, and `/metrics`; OpenAPI documentation is at `/docs`.
 
+The web interface presents safety status, evidence confidence, exact passages, source
+links, publication/update metadata, retrieval rank and score, and expandable method/model
+details. It has explicit loading, timeout, API-error, retry, abstention, and emergency
+states and adapts to desktop and mobile layouts.
+
+Operational query events are emitted as structured JSON. They include a random request
+ID, text lengths/token counts, retrieval method, public document IDs, scores, latency,
+provider/model identifiers when applicable, and the safety outcome. Raw questions,
+answers, and retrieved passages are deliberately excluded from logs. `/metrics` exposes
+only in-memory aggregates for request types, errors, abstentions, emergency escalations,
+evidence counts, and retrieval/generation/total latency.
+
 ## Safety and privacy
 
 - Weak or missing evidence must produce abstention, not confident medical advice.
@@ -124,6 +136,7 @@ Required API endpoints are available at `/health`, `/query`, `/retrieve`,
 - Generation must be restricted to retrieved evidence and expose limitations.
 - Only public documents and synthetic/demo questions belong in this repository.
 - Do not enter patient-identifiable or private medical information.
+- Raw question and answer text is not retained in application metrics or structured logs.
 
 ## Status
 

@@ -114,6 +114,7 @@ def answer_from_evidence(
         retrieval_metadata=retrieval_metadata,
         generation_metadata=GenerationMetadata(
             provider=selected_provider.name,
+            model=getattr(selected_provider, "model", None),
             latency_ms=elapsed_ms,
             citations_verified=citations_verified,
             fallback_used=fallback_used,
