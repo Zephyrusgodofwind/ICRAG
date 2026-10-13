@@ -5,8 +5,8 @@ latency-corrected benchmark subsequently completed and passed provenance validat
 
 ## Durable state
 
-- Commit `a7d145e` adds the reproducible 100-case dataset and evaluation framework.
-- Commit `a704bb1` adds one unmeasured warm-up query per retrieval method so model startup
+- Commit `6a83624` adds the reproducible 100-case dataset and evaluation framework.
+- Commit `c1b8a55` adds one unmeasured warm-up query per retrieval method so model startup
   does not distort query latency.
 - The dataset contains 25 manually authored, source-checked questions and 75 unique,
   deterministic source probes. The dataset build and all relevance-label existence checks
@@ -23,13 +23,13 @@ The interrupted command was rerun successfully:
 .venv/Scripts/python -m irishclinicalrag.cli evaluate --output-dir experiments/results/day4
 ```
 
-The final result contains 400 unique predictions and records commit `a704bb1`. It is
+The final result contains 400 unique predictions and records commit `3c2f035`. It is
 stored under `experiments/results/day4/`, with interpretation and failure analysis in
 `docs/results/day4.md`.
 
 The last fully completed pre-warm-up run is preserved locally under
 `experiments/results/day4-pre-warmup/` and intentionally ignored by Git. It references
-commit `a7d145e`. Its retrieval-quality values are useful only as a provisional
+the pre-rebase commit `a7d145e`. Its retrieval-quality values are useful only as a provisional
 cross-check; its latency comparison is superseded by the warm-up protocol and must not be
 published as the final Day 4 result. The validated warm-latency bundle supersedes it.
 

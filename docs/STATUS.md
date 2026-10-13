@@ -87,7 +87,7 @@ Complete and locally verified:
   `6a92d8f3b1b30c1fecb3263c1043e08be5248f06daa1eab64d3610c08f08dae1`.
 - On the 25 reviewed questions, hybrid Recall@5/MRR measured 0.920/0.827 and
   hybrid-plus-reranker measured 0.940/0.837. Median warm CPU latency increased from
-  58.8 ms to 1,679.4 ms with reranking.
+  68.3 ms to 1,698.6 ms with reranking.
 - Validated the dataset checksum, exact Git and corpus provenance, 400 unique
   predictions, cohort counts, metric bounds, and grounded-answer evaluation completion.
 - Documented the exact-passage failures, one conservative RAG abstention, synthetic-probe

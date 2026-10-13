@@ -59,10 +59,10 @@ On the 25-question reviewed subset of the 100-case benchmark:
 
 | Retriever | Recall@5 | MRR | Median warm latency |
 |---|---:|---:|---:|
-| BM25 | 0.820 | 0.641 | 2.3 ms |
-| Dense | 0.780 | 0.660 | 58.3 ms |
-| Hybrid | 0.920 | 0.827 | 58.8 ms |
-| Hybrid + reranker | 0.940 | 0.837 | 1,679.4 ms |
+| BM25 | 0.820 | 0.641 | 2.6 ms |
+| Dense | 0.780 | 0.660 | 57.8 ms |
+| Hybrid | 0.920 | 0.827 | 68.3 ms |
+| Hybrid + reranker | 0.940 | 0.837 | 1,698.6 ms |
 
 The reranker produced a modest quality gain at a large CPU-latency cost. These results are
 engineering measurements on a small, synthetic/non-patient benchmark—not clinical

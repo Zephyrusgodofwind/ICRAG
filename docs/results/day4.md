@@ -1,7 +1,7 @@
 # Day 4 evaluation results
 
 - Run date: 2026-10-13
-- Experiment code commit: `a704bb17fc05b41e7dd856cc10de732752cb7433`
+- Experiment code commit: `3c2f0359154aeb50270b806fac2560580eb07e2a`
 - Corpus fingerprint: `6a92d8f3b1b30c1fecb3263c1043e08be5248f06daa1eab64d3610c08f08dae1`
 - Dataset: 100 synthetic, non-patient questions (25 curated + 75 lexical probes)
 - Dense model: `BAAI/bge-small-en-v1.5`
@@ -15,10 +15,10 @@ clinical validation.
 
 | Method | Precision@5 | Recall@5 | Hit Rate@5 | MRR | nDCG@5 | Source Recall@5 | Median latency |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| BM25 | 0.216 | 0.820 | 0.840 | 0.641 | 0.686 | 1.000 | 2.3 ms |
-| Dense | 0.208 | 0.780 | 0.800 | 0.660 | 0.691 | 1.000 | 58.3 ms |
-| Hybrid | 0.248 | 0.920 | 0.920 | 0.827 | 0.852 | 1.000 | 58.8 ms |
-| Hybrid + reranker | 0.256 | 0.940 | 0.960 | 0.837 | 0.858 | 1.000 | 1,679.4 ms |
+| BM25 | 0.216 | 0.820 | 0.840 | 0.641 | 0.686 | 1.000 | 2.6 ms |
+| Dense | 0.208 | 0.780 | 0.800 | 0.660 | 0.691 | 1.000 | 57.8 ms |
+| Hybrid | 0.248 | 0.920 | 0.920 | 0.827 | 0.852 | 1.000 | 68.3 ms |
+| Hybrid + reranker | 0.256 | 0.940 | 0.960 | 0.837 | 0.858 | 1.000 | 1,698.6 ms |
 
 Latency is warm CPU query latency after one unmeasured warm-up query per method. It does
 not include model loading. Exact mean, median, p95, full-cohort, and probe-cohort values
@@ -30,7 +30,7 @@ are retained in `metrics.json`.
   Recall@5 was 0.920 versus 0.820 for BM25 and 0.780 for dense retrieval. MRR was 0.827
   versus 0.641 and 0.660 respectively.
 - Cross-encoder reranking made a smaller improvement over hybrid: +0.020 Recall@5 and
-  +0.010 MRR, while median latency increased from 58.8 ms to 1,679.4 ms (about 28.6 times).
+  +0.010 MRR, while median latency increased from 68.3 ms to 1,698.6 ms (about 24.9 times).
   Whether that trade-off is appropriate depends on the deployment latency budget.
 - All four methods achieved source-document Recall@5 of 1.000 on the curated cohort. The
   remaining failures were therefore exact-passage ranking failures rather than complete
