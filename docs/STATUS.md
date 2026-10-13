@@ -20,10 +20,11 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [x] Retrieval and RAG evaluation with measured, reproducible results
 - [x] FastAPI endpoints
 - [x] Usable research-style web interface
-- [~] Docker Compose configuration implemented; runtime verification pending (Docker unavailable)
+- [~] Hardened Docker Compose and CI image build implemented; local runtime verification
+  pending because Docker is unavailable
 - [x] README skeleton and architecture diagram
 - [ ] Demo screenshots/video
-- [x] Critical component tests (39 passing; 79% statement coverage)
+- [x] Critical component tests (49 passing; 80% statement coverage)
 
 ## Day 1 milestone
 
@@ -111,6 +112,26 @@ Complete and locally verified:
   Starlette `TestClient`/httpx deprecation warning remains documented.
 - Recorded the full checks and limitations in `docs/DAY5_VERIFICATION.md`.
 
+## Day 6 milestone
+
+Complete and locally verified within available infrastructure:
+
+- Added invalidating, bounded in-process caching for public corpus/configuration/retrieval
+  components without retaining raw questions, answers, or query results.
+- Added optional pre-readiness model warming; the first ready-state grounded request
+  measured 1,936.1 ms and the following request measured 1,636.9 ms end to end on local
+  CPU. These are engineering observations, not latency guarantees.
+- Added strict readiness, independent liveness, cache observability, safe remote-generation
+  fallback, and explicit hybrid fallback when reranking is unavailable.
+- Hardened Docker/Compose runtime settings and added a production-image build to CI.
+  Docker is not installed locally, so local container execution is not claimed.
+- Re-ran all 100 evaluation cases and 400 predictions. All rankings matched Day 4 exactly;
+  reviewed Recall@5/MRR remained 0.820/0.641 (BM25), 0.780/0.660 (dense),
+  0.920/0.827 (hybrid), and 0.940/0.837 (hybrid plus reranker).
+- Passed 49 tests with 80% statement coverage, clean Ruff, and JavaScript syntax checks.
+- Recorded the full protocol, measurements, limitations, and deployment constraint in
+  `docs/DAY6_VERIFICATION.md`.
+
 ## Research questions
 
 Primary: Does hybrid dense + lexical retrieval outperform either retriever alone
@@ -130,6 +151,8 @@ PubMed ingestion) remains out of scope until every non-negotiable item is comple
 - [x] GitHub remote configured: `Zephyrusgodofwind/ICRAG`
 - [x] 2026-10-13 verified Day 4 commits pushed; remote acceptance confirmed
 - [x] 2026-10-13 verified Day 5 product-layer commit pushed; remote acceptance confirmed
+- [~] 2026-10-13 Day 6 local verification complete; GitHub push and remote CI are the
+  remaining closeout actions
 
 Daily GitHub pushes are a non-negotiable delivery requirement. The exact closeout
 procedure is defined in `AGENTS.md`.

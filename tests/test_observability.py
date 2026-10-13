@@ -17,6 +17,7 @@ def test_metrics_store_tracks_routes_safety_and_latencies() -> None:
         evidence_count=5,
         retrieval_performed=True,
         generation_performed=False,
+        component_cache_hit=False,
     )
     metrics.record_success(
         route="query",
@@ -26,6 +27,8 @@ def test_metrics_store_tracks_routes_safety_and_latencies() -> None:
         evidence_count=3,
         retrieval_performed=True,
         generation_performed=True,
+        generation_fallback_used=True,
+        component_cache_hit=True,
         safety_status="insufficient_evidence",
     )
     metrics.record_failure(route="query", total_latency_ms=3)
@@ -36,6 +39,10 @@ def test_metrics_store_tracks_routes_safety_and_latencies() -> None:
     assert snapshot["answer_request_count"] == 2
     assert snapshot["retrieval_operation_count"] == 2
     assert snapshot["generation_operation_count"] == 1
+    assert snapshot["generation_fallback_count"] == 1
+    assert snapshot["component_cache_hits"] == 1
+    assert snapshot["component_cache_misses"] == 1
+    assert snapshot["component_cache_hit_rate"] == 0.5
     assert snapshot["error_count"] == 1
     assert snapshot["abstention_count"] == 1
     assert snapshot["average_retrieval_latency_ms"] == 15

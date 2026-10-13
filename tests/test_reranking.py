@@ -3,7 +3,9 @@ from datetime import UTC, datetime
 import pytest
 
 from irishclinicalrag.models import EvidenceChunk, RetrievalResult
+from irishclinicalrag.pipeline import RetrievalEngine
 from irishclinicalrag.reranking.cross_encoder import CrossEncoderReranker
+from irishclinicalrag.settings import Settings
 
 
 class KeywordScorer:
@@ -20,6 +22,14 @@ class BrokenScorer:
     def score(self, query, passages):
         del query, passages
         return []
+
+
+class UnavailableScorer:
+    name = "unavailable"
+
+    def score(self, query, passages):
+        del query, passages
+        raise RuntimeError("model unavailable")
 
 
 def _result(identifier: str, content: str, rank: int) -> RetrievalResult:
@@ -72,3 +82,22 @@ def test_cross_encoder_handles_empty_candidates() -> None:
     reranker = CrossEncoderReranker("test-model", scorer=KeywordScorer())
 
     assert reranker.rerank("question", []) == []
+
+
+def test_pipeline_falls_back_to_hybrid_when_reranker_is_unavailable(tmp_path) -> None:
+    engine = RetrievalEngine(
+        [_result("c1", "A specific recommendation for antibiotic review.", 1).chunk],
+        Settings(),
+        data_dir=tmp_path,
+        method="hybrid-rerank",
+    )
+    engine.reranker = CrossEncoderReranker("unavailable", scorer=UnavailableScorer())
+
+    first = engine.retrieve("specific recommendation antibiotic review")
+    second = engine.retrieve("specific recommendation antibiotic review")
+
+    assert first.retrieval_metadata.method == "hybrid-rrf+reranker-fallback"
+    assert first.retrieval_metadata.parameters["reranker_fallback_used"] is True
+    assert first.retrieval_metadata.parameters["reranker_fallback_reason"] == "model_unavailable"
+    assert first.evidence[0].retriever == "hybrid-rrf"
+    assert second.retrieval_metadata.method == "hybrid-rrf+reranker-fallback"

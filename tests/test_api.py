@@ -10,7 +10,7 @@ from irishclinicalrag.observability.events import QueryEventLogger
 from irishclinicalrag.storage import write_jsonl
 
 
-def _client(tmp_path, query_event_logger=None) -> TestClient:
+def _client(tmp_path, query_event_logger=None, config_payload=None) -> TestClient:
     data_dir = tmp_path / "data"
     chunk = EvidenceChunk(
         document_id="hse-test",
@@ -22,12 +22,15 @@ def _client(tmp_path, query_event_logger=None) -> TestClient:
         url="https://www.hse.ie/test.pdf",
         retrieved_at=datetime(2026, 10, 7, tzinfo=UTC),
         topic="antimicrobial stewardship",
-        content="Antimicrobial prescriptions require a documented review date.",
+        content=(
+            "Antimicrobial prescriptions should include a documented review date "
+            "for safe prescribing."
+        ),
         content_sha256="f" * 64,
     )
     write_jsonl(data_dir / "chunks" / "chunks.jsonl", [chunk])
     config = tmp_path / "config.json"
-    config.write_text(json.dumps({}), encoding="utf-8")
+    config.write_text(json.dumps(config_payload or {}), encoding="utf-8")
     return TestClient(
         create_app(
             data_dir=data_dir,
@@ -43,19 +46,41 @@ def test_required_api_endpoints(tmp_path) -> None:
     assert client.get("/").status_code == 200
     assert client.get("/styles.css").headers["content-type"].startswith("text/css")
     assert client.get("/app.js").headers["content-type"].startswith("text/javascript")
-    assert client.get("/health").json() == {
+    health = client.get("/health")
+    assert health.status_code == 200
+    assert health.json() == {
         "status": "ok",
+        "ready": True,
         "indexed_chunks": 1,
         "indexed_documents": 1,
         "semantic_index": False,
+        "component_cache_loaded": True,
+        "component_cache_hit": False,
+        "component_cache_generation": 1,
     }
+    assert client.get("/health/live").json() == {"status": "ok"}
     assert client.get("/sources").json()[0]["source"] == "HSE"
     retrieval = client.post(
         "/retrieve", json={"question": "Should antimicrobial prescriptions have a review date?"}
     )
     assert retrieval.status_code == 200
     assert retrieval.json()["evidence"][0]["chunk"]["chunk_id"] == "hse-test:1"
-    assert client.get("/metrics").json()["query_count"] == 1
+    assert retrieval.json()["retrieval_metadata"]["parameters"]["component_cache_hit"]
+    metrics = client.get("/metrics").json()
+    assert metrics["query_count"] == 1
+    assert metrics["component_cache_hits"] == 1
+
+
+def test_readiness_fails_closed_without_corpus(tmp_path) -> None:
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({}), encoding="utf-8")
+    client = TestClient(create_app(data_dir=tmp_path / "missing", config_path=config))
+
+    assert client.get("/health/live").status_code == 200
+    readiness = client.get("/health")
+    assert readiness.status_code == 503
+    assert readiness.json()["status"] == "not_ready"
+    assert readiness.json()["error_code"] == "corpus_or_config_missing"
 
 
 def test_emergency_query_skips_retrieval(tmp_path) -> None:
@@ -63,7 +88,7 @@ def test_emergency_query_skips_retrieval(tmp_path) -> None:
 
     response = client.post("/query", json={"question": "I have chest pain and cannot breathe"})
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.text
     assert response.json()["safety_status"] == "emergency_escalation"
     assert response.json()["retrieval_metadata"]["method"] == "skipped-emergency-safety"
     metrics = client.get("/metrics").json()
@@ -86,6 +111,39 @@ def test_query_endpoint_abstains_when_no_matching_evidence(tmp_path) -> None:
     assert metrics["average_total_latency_ms"] >= 0
 
 
+def test_missing_remote_generation_configuration_uses_safe_fallback(
+    tmp_path, monkeypatch
+) -> None:
+    monkeypatch.delenv("TEST_MISSING_LLM_KEY", raising=False)
+    client = _client(
+        tmp_path,
+        config_payload={
+            "generation": {
+                "provider": "openai-compatible",
+                "model": "unavailable-model",
+                "base_url": "https://example.test/v1",
+                "api_key_env": "TEST_MISSING_LLM_KEY",
+            }
+        },
+    )
+
+    response = client.post(
+        "/query",
+        json={"question": "Do antimicrobial prescriptions require a documented review date?"},
+    )
+
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["evidence_sufficient"] is True
+    assert payload["generation_metadata"]["provider"] == "extractive-evidence-baseline"
+    assert payload["generation_metadata"]["fallback_used"] is True
+    assert (
+        payload["generation_metadata"]["fallback_reason"]
+        == "provider_configuration_unavailable"
+    )
+    assert client.get("/metrics").json()["generation_fallback_count"] == 1
+
+
 def test_structured_query_log_excludes_clinical_text(tmp_path, caplog) -> None:
     logger = logging.getLogger("test.api.structured-query")
     client = _client(tmp_path, QueryEventLogger(logger))
@@ -100,6 +158,7 @@ def test_structured_query_log_excludes_clinical_text(tmp_path, caplog) -> None:
     assert event["route"] == "query"
     assert event["query_characters"] == len(private_text)
     assert event["query_token_count"] == len(private_text.split())
+    assert event["component_cache_hit"] is False
     assert private_text not in caplog.text
     assert "question" not in event
     assert "answer" not in event

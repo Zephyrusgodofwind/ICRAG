@@ -14,6 +14,9 @@ class MetricsStore:
     _answer_request_count: int = 0
     _retrieval_operation_count: int = 0
     _generation_operation_count: int = 0
+    _generation_fallback_count: int = 0
+    _component_cache_hits: int = 0
+    _component_cache_misses: int = 0
     _error_count: int = 0
     _abstention_count: int = 0
     _emergency_escalation_count: int = 0
@@ -32,6 +35,8 @@ class MetricsStore:
         evidence_count: int,
         retrieval_performed: bool,
         generation_performed: bool,
+        generation_fallback_used: bool = False,
+        component_cache_hit: bool | None = None,
         safety_status: str | None = None,
     ) -> None:
         with self._lock:
@@ -40,6 +45,9 @@ class MetricsStore:
             self._answer_request_count += int(route == "query")
             self._retrieval_operation_count += int(retrieval_performed)
             self._generation_operation_count += int(generation_performed)
+            self._generation_fallback_count += int(generation_fallback_used)
+            self._component_cache_hits += int(component_cache_hit is True)
+            self._component_cache_misses += int(component_cache_hit is False)
             self._abstention_count += int(safety_status == "insufficient_evidence")
             self._emergency_escalation_count += int(safety_status == "emergency_escalation")
             self._evidence_returned += evidence_count
@@ -75,6 +83,10 @@ class MetricsStore:
             average_evidence = (
                 self._evidence_returned / self._request_count if self._request_count else 0.0
             )
+            cache_attempts = self._component_cache_hits + self._component_cache_misses
+            cache_hit_rate = (
+                self._component_cache_hits / cache_attempts if cache_attempts else 0.0
+            )
             return {
                 # Retained for compatibility with the original metrics contract.
                 "query_count": self._request_count,
@@ -83,6 +95,10 @@ class MetricsStore:
                 "answer_request_count": self._answer_request_count,
                 "retrieval_operation_count": self._retrieval_operation_count,
                 "generation_operation_count": self._generation_operation_count,
+                "generation_fallback_count": self._generation_fallback_count,
+                "component_cache_hits": self._component_cache_hits,
+                "component_cache_misses": self._component_cache_misses,
+                "component_cache_hit_rate": round(cache_hit_rate, 3),
                 "error_count": self._error_count,
                 "abstention_count": self._abstention_count,
                 "emergency_escalation_count": self._emergency_escalation_count,

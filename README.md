@@ -101,7 +101,15 @@ docker compose up --build
 
 The first container start ingests the public sources and downloads/builds the configured
 ML indexes, so it is substantially slower than later starts. The data volume preserves the
-corpus, vector index, and Hugging Face cache.
+corpus, vector index, and Hugging Face cache. Compose runs as a non-root user with a
+read-only root filesystem, dropped Linux capabilities, a bounded PID limit, readiness
+health checking, graceful shutdown, and model warming before traffic is accepted.
+
+`GET /health/live` reports process liveness. `GET /health` is the stricter readiness gate:
+it returns HTTP 503 until the corpus, configuration, and retrieval components can be
+loaded consistently. The API keeps one bounded in-process cache of public corpus data,
+retriever instances, and model adapters. File changes invalidate that snapshot. Raw
+questions and generated responses are never cached.
 
 The committed source catalog contains authoritative URLs, not copied clinical
 content. Downloads are checksum-addressed under `data/raw/` and recorded in an
@@ -127,7 +135,12 @@ ID, text lengths/token counts, retrieval method, public document IDs, scores, la
 provider/model identifiers when applicable, and the safety outcome. Raw questions,
 answers, and retrieved passages are deliberately excluded from logs. `/metrics` exposes
 only in-memory aggregates for request types, errors, abstentions, emergency escalations,
-evidence counts, and retrieval/generation/total latency.
+evidence counts, component-cache hits, and retrieval/generation/total latency.
+
+If a configured remote generator fails or its credential is unavailable, the grounded
+extractive provider is used and the fallback reason is exposed in response metadata. If
+the optional cross-encoder cannot load, retrieval degrades explicitly to the hybrid result
+instead of returning an ungrounded answer.
 
 ## Safety and privacy
 

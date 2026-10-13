@@ -19,9 +19,12 @@ class QueryEvent:
     total_latency_ms: float
     retrieval_method: str | None = None
     retrieval_latency_ms: float = 0.0
+    component_cache_hit: bool | None = None
     generation_provider: str | None = None
     generation_model: str | None = None
     generation_latency_ms: float = 0.0
+    generation_fallback_used: bool = False
+    generation_fallback_reason: str | None = None
     answer_token_count: int = 0
     evidence_count: int = 0
     retrieved_documents: list[str] = field(default_factory=list)

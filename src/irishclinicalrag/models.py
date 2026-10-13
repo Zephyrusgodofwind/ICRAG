@@ -173,6 +173,7 @@ class GenerationMetadata(BaseModel):
     latency_ms: float = Field(ge=0)
     citations_verified: bool
     fallback_used: bool = False
+    fallback_reason: str | None = None
 
 
 class AnswerResponse(BaseModel):

@@ -75,26 +75,40 @@ def answer_from_evidence(
         raise RuntimeError("citation provenance validation failed")
     selected_provider = provider or ExtractiveEvidenceProvider()
     started = time.perf_counter()
-    answer = selected_provider.generate(
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "Use only retrieved evidence. Cite every medical statement. "
-                    "State uncertainty and never invent a source."
-                ),
-            },
-            {"role": "user", "content": question},
-        ],
-        context=evidence,
-        citations=citations,
-    )
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "Use only retrieved evidence. Cite every medical statement. "
+                "State uncertainty and never invent a source."
+            ),
+        },
+        {"role": "user", "content": question},
+    ]
     fallback_used = False
+    fallback_reason = None
+    try:
+        answer = selected_provider.generate(
+            messages=messages,
+            context=evidence,
+            citations=citations,
+        )
+    except Exception:
+        if isinstance(selected_provider, ExtractiveEvidenceProvider):
+            raise
+        fallback_used = True
+        fallback_reason = "provider_error"
+        answer = ExtractiveEvidenceProvider().generate(
+            messages=messages,
+            context=evidence,
+            citations=citations,
+        )
     citations_verified = verify_answer_citations(answer, citations)
     if not citations_verified:
         fallback_used = True
+        fallback_reason = "citation_verification_failed"
         answer = ExtractiveEvidenceProvider().generate(
-            messages=[{"role": "user", "content": question}],
+            messages=messages,
             context=evidence,
             citations=citations,
         )
@@ -118,5 +132,6 @@ def answer_from_evidence(
             latency_ms=elapsed_ms,
             citations_verified=citations_verified,
             fallback_used=fallback_used,
+            fallback_reason=fallback_reason,
         ),
     )

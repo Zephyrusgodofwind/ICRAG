@@ -10,12 +10,14 @@ flowchart LR
     V --> F["Validated chunk JSONL"]
     F --> G["BM25 retriever"]
     F --> H["Persistent BGE dense index"]
-    G --> I["Reciprocal Rank Fusion"]
-    H --> I
+    G --> R["Bounded component cache<br/>(no queries or answers)"]
+    H --> R
+    R --> I["Reciprocal Rank Fusion"]
     I --> J["Cross-encoder reranker"]
     J --> K["Evidence contract"]
     K --> L["Safety + generation"]
     L --> M["FastAPI / web UI"]
+    R --> N["Readiness + cache metrics"]
 ```
 
 ## Design boundaries
@@ -27,3 +29,7 @@ flowchart LR
 - The semantic index is bound to the corpus fingerprint and exact chunk order.
 - Model-backed embeddings, rerankers, and generation providers are replaceable.
 - Retrieval-only operation requires no external LLM and remains testable offline.
+- The API reuses one public-data retrieval snapshot and invalidates it when source files
+  change; it never caches raw questions or generated answers.
+- Liveness is independent of readiness, while the readiness gate validates the corpus and
+  retrieval runtime before the service accepts traffic.

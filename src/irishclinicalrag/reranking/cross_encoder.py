@@ -43,6 +43,10 @@ class SentenceTransformerPairScorer:
         self.batch_size = batch_size
         self.local_files_only = local_files_only
 
+    def warm(self) -> None:
+        """Load the cross-encoder without scoring or retaining a query."""
+        _load_cross_encoder(self.model_name, self.local_files_only)
+
     def score(self, query: str, passages: Sequence[str]) -> list[float]:
         if not passages:
             return []
@@ -73,6 +77,12 @@ class CrossEncoderReranker:
             batch_size=batch_size,
             local_files_only=local_files_only,
         )
+
+    def warm(self) -> None:
+        """Load the configured scorer when it provides a warm-up hook."""
+        warm = getattr(self.scorer, "warm", None)
+        if callable(warm):
+            warm()
 
     def rerank(
         self,

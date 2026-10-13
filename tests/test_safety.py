@@ -88,6 +88,43 @@ def test_uncited_provider_output_falls_back_to_extractive_answer() -> None:
 
     assert response.generation_metadata.provider == "unsafe-test-provider"
     assert response.generation_metadata.fallback_used
+    assert response.generation_metadata.fallback_reason == "citation_verification_failed"
+    assert "[1]" in response.answer
+
+
+def test_failed_remote_provider_falls_back_to_extractive_answer() -> None:
+    class UnavailableProvider:
+        name = "unavailable-test-provider"
+
+        def generate(self, messages, context, citations, **kwargs):
+            del messages, context, citations, kwargs
+            raise OSError("endpoint unavailable")
+
+    chunk = EvidenceChunk(
+        document_id="hse-test",
+        chunk_id="hse-test:1",
+        source="HSE",
+        source_type="clinical_guideline",
+        title="Guideline",
+        section="Principles",
+        url="https://www.hse.ie/test.pdf",
+        retrieved_at=datetime(2026, 10, 7, tzinfo=UTC),
+        topic="antimicrobial stewardship",
+        content="Antimicrobial prescriptions should include a documented review date.",
+        content_sha256="d" * 64,
+    )
+    result = RetrievalResult(chunk=chunk, score=0.8, rank=1, retriever="cross-encoder")
+
+    response = answer_from_evidence(
+        "Should antimicrobial prescriptions include a documented review date?",
+        [result],
+        _metadata(),
+        provider=UnavailableProvider(),
+    )
+
+    assert response.evidence_sufficient
+    assert response.generation_metadata.fallback_used
+    assert response.generation_metadata.fallback_reason == "provider_error"
     assert "[1]" in response.answer
 
 

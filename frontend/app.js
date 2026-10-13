@@ -80,6 +80,13 @@ function renderMethodDetails(payload, clientLatencyMs) {
     ["Dense encoder", parameters.dense_model],
     ["Reranker", parameters.reranker_model],
     ["Generator", generation.model || generation.provider],
+    ["Component cache", parameters.component_cache_hit === undefined
+      ? null
+      : parameters.component_cache_hit ? "hit" : "miss"],
+    ["Reranker status", parameters.reranker_fallback_used
+      ? `fallback (${parameters.reranker_fallback_reason || "unavailable"})`
+      : null],
+    ["Generation fallback", generation.fallback_reason],
     ["Initial candidates", parameters.top_k_initial],
     ["Final evidence", meta.returned],
     ["Retrieval latency", `${meta.latency_ms.toFixed(1)} ms`],

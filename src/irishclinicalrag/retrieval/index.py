@@ -46,6 +46,10 @@ class SentenceTransformerEncoder:
         self.batch_size = batch_size
         self.local_files_only = local_files_only
 
+    def warm(self) -> None:
+        """Load the encoder without running a synthetic clinical query."""
+        _load_model(self.model_name, self.local_files_only)
+
     def encode(self, texts: Sequence[str]) -> list[list[float]]:
         if not texts:
             return []
@@ -143,6 +147,12 @@ class IndexedDenseRetriever:
         self.encoder = encoder or SentenceTransformerEncoder(
             self.metadata.model_name, local_files_only=True
         )
+
+    def warm(self) -> None:
+        """Load the query encoder when the active adapter supports warming."""
+        warm = getattr(self.encoder, "warm", None)
+        if callable(warm):
+            warm()
 
     def search(self, query: str, top_k: int = 10) -> list[RetrievalResult]:
         encoded = self.encoder.encode([f"{self.metadata.query_prefix}{query}"])
