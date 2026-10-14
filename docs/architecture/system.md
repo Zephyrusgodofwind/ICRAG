@@ -33,3 +33,26 @@ flowchart LR
   change; it never caches raw questions or generated answers.
 - Liveness is independent of readiness, while the readiness gate validates the corpus and
   retrieval runtime before the service accepts traffic.
+
+## Request and safety flow
+
+```mermaid
+flowchart TD
+    Q["Synthetic/demo question"] --> E{"Emergency language?"}
+    E -- Yes --> U["Urgent Ireland guidance<br/>retrieval skipped"]
+    E -- No --> C["Load cached public-corpus components"]
+    C --> R["Hybrid retrieve + optional rerank"]
+    R --> S{"Evidence sufficient?"}
+    S -- No --> A["Safe abstention"]
+    S -- Yes --> G["Replaceable grounded generator"]
+    G --> V{"Every paragraph cites<br/>known retrieved chunks?"}
+    V -- No --> X["Verified extractive fallback"]
+    V -- Yes --> O["Grounded answer"]
+    X --> P["Answer + exact evidence + limitations"]
+    O --> P
+    A --> P
+    U --> P
+```
+
+Only public component state is cached. Questions, answers, and retrieved passage payloads
+are excluded from the cache, structured logs, and aggregate metrics.

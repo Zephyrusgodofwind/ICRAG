@@ -21,10 +21,11 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [x] FastAPI endpoints
 - [x] Usable research-style web interface
 - [~] Hardened Docker/Compose implemented and production image builds successfully in CI;
-  local Compose runtime verification remains unavailable on this machine
-- [x] README skeleton and architecture diagram
-- [ ] Demo screenshots/video
-- [x] Critical component tests (49 passing; 80% statement coverage)
+  Docker Desktop is installed locally, but Windows WSL 2 platform activation/restart is
+  still required before local Compose runtime verification
+- [x] Release README and system/request-flow architecture diagrams
+- [x] Three original demo screenshots from the real API-backed interface
+- [x] Critical component and release-contract tests (51 passing; 80% statement coverage)
 
 ## Day 1 milestone
 
@@ -133,6 +134,29 @@ Complete and locally verified within available infrastructure:
 - Recorded the full protocol, measurements, limitations, and deployment constraint in
   `docs/DAY6_VERIFICATION.md`.
 
+## Day 7 milestone
+
+Complete within the documented deployment boundary:
+
+- Preserved the final 100-case/400-prediction experiment as the canonical result after
+  Day 6 reproduced every ranking exactly; no new metric was invented for portfolio polish.
+- Rebuilt the README around product value, motivation, real screenshots, public Irish
+  sources, methodology, measured results, safety, installation, Docker deployment,
+  limitations, roadmap, originality, and reproducibility.
+- Added a detailed methodology, a second architecture/request-flow diagram, three original
+  screenshots, recruiter/PI portfolio narrative, defensible CV bullets, and an issue-ready
+  prioritised roadmap.
+- Browser-verified a citation-grounded answer, insufficient-evidence abstention, emergency
+  bypass with zero retrieved passages, and the 390 x 844 mobile layout against the real
+  692-chunk corpus; zero console errors were observed.
+- Added release-contract tests for the required documents/screenshots and the correspondence
+  between README headline metrics and the committed machine-readable experiment record.
+- Passed 51 tests, Ruff, JavaScript syntax, YAML parsing, corpus-backed API readiness, and
+  the real browser acceptance flows.
+- Documented the two remaining release boundaries without overstating completion: local
+  Compose acceptance awaits Windows WSL 2 platform activation/restart, and no public hosted
+  demo target or credentials are configured.
+
 ## Research questions
 
 Primary: Does hybrid dense + lexical retrieval outperform either retriever alone
@@ -156,6 +180,8 @@ PubMed ingestion) remains out of scope until every non-negotiable item is comple
   Docker image-build gates passed in GitHub Actions
 - [x] 2026-10-14 Day 6 closeout verification finalized following successful remote gates;
   delivery is recorded in this repository revision
+- [~] 2026-10-14 Day 7 release verified locally; GitHub daily closeout is pending the final
+  secret/artifact review, commit, push, and remote acceptance check
 
 Daily GitHub pushes are a non-negotiable delivery requirement. The exact closeout
 procedure is defined in `AGENTS.md`.
