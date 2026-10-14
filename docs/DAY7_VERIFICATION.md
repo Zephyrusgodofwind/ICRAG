@@ -56,8 +56,8 @@ public-source content.
 - `pytest`: 51 passed.
 - `node --check frontend/app.js`: passed.
 - YAML parsing for Compose and GitHub Actions configuration: passed.
-- GitHub Actions production-image build: passed in
-  [run 38374542771](https://github.com/Zephyrusgodofwind/ICRAG/actions/runs/38374542771).
+- GitHub Actions Python 3.11/3.13 quality gates and production-image build: passed in
+  [Day 7 run 38565940902](https://github.com/Zephyrusgodofwind/ICRAG/actions/runs/38565940902).
 
 One upstream Starlette `TestClient`/httpx deprecation warning remains and does not indicate
 an application test failure.
