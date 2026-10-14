@@ -1,6 +1,6 @@
 # Delivery status
 
-Last updated: 2026-10-13
+Last updated: 2026-10-14
 
 Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 
@@ -20,8 +20,8 @@ Legend: `[x]` implemented, `[~]` in progress, `[ ]` not yet implemented.
 - [x] Retrieval and RAG evaluation with measured, reproducible results
 - [x] FastAPI endpoints
 - [x] Usable research-style web interface
-- [~] Hardened Docker Compose and CI image build implemented; local runtime verification
-  pending because Docker is unavailable
+- [~] Hardened Docker/Compose implemented and production image builds successfully in CI;
+  local Compose runtime verification remains unavailable on this machine
 - [x] README skeleton and architecture diagram
 - [ ] Demo screenshots/video
 - [x] Critical component tests (49 passing; 80% statement coverage)
@@ -123,8 +123,9 @@ Complete and locally verified within available infrastructure:
   CPU. These are engineering observations, not latency guarantees.
 - Added strict readiness, independent liveness, cache observability, safe remote-generation
   fallback, and explicit hybrid fallback when reranking is unavailable.
-- Hardened Docker/Compose runtime settings and added a production-image build to CI.
-  Docker is not installed locally, so local container execution is not claimed.
+- Hardened Docker/Compose runtime settings; the production image built successfully in
+  GitHub Actions. Docker is not installed locally, so local Compose execution is not
+  claimed.
 - Re-ran all 100 evaluation cases and 400 predictions. All rankings matched Day 4 exactly;
   reviewed Recall@5/MRR remained 0.820/0.641 (BM25), 0.780/0.660 (dense),
   0.920/0.827 (hybrid), and 0.940/0.837 (hybrid plus reranker).
@@ -151,8 +152,10 @@ PubMed ingestion) remains out of scope until every non-negotiable item is comple
 - [x] GitHub remote configured: `Zephyrusgodofwind/ICRAG`
 - [x] 2026-10-13 verified Day 4 commits pushed; remote acceptance confirmed
 - [x] 2026-10-13 verified Day 5 product-layer commit pushed; remote acceptance confirmed
-- [~] 2026-10-13 Day 6 local verification complete; GitHub push and remote CI are the
-  remaining closeout actions
+- [x] 2026-10-13 verified Day 6 commit pushed; Python 3.11, Python 3.13, and production
+  Docker image-build gates passed in GitHub Actions
+- [x] 2026-10-14 Day 6 closeout verification finalized following successful remote gates;
+  delivery is recorded in this repository revision
 
 Daily GitHub pushes are a non-negotiable delivery requirement. The exact closeout
 procedure is defined in `AGENTS.md`.

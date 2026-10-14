@@ -1,6 +1,6 @@
 # Day 6 deployment and reliability verification
 
-Date: 2026-10-13
+Completed: 2026-10-14
 
 ## Delivered
 
@@ -21,7 +21,7 @@ Date: 2026-10-13
   graceful shutdown, configurable paths/host/port/logging, and a five-minute first-start
   health grace period.
 - Added a GitHub Actions production-image build because Docker is not installed on the
-  local development machine.
+  local development machine. The production image built successfully in remote CI.
 
 ## Verification evidence
 
@@ -61,9 +61,9 @@ benchmark because retrieval quality did not change.
 
 ## Constraints and remaining work
 
-- Docker is not installed on this machine, so no local image-build or Compose-runtime
-  claim is made. Static deployment tests pass; the GitHub Actions image build is the
-  executable remote gate.
+- Docker is not installed on this machine, so no local Compose-runtime claim is made.
+  Static deployment tests pass and the GitHub Actions production image build completed
+  successfully in [CI run 38374542771](https://github.com/Zephyrusgodofwind/ICRAG/actions/runs/38374542771).
 - No public deployment was attempted because no hosting target or deployment credentials
   are configured. This is recorded rather than presenting a local service as public.
 - One upstream Starlette `TestClient`/httpx deprecation warning remains.
